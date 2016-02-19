@@ -1,0 +1,16 @@
+SET(INCLUDE_PATH ${PROJECT_SOURCE_DIR}/src/include)
+SET(COMMON_PATH  ${PROJECT_SOURCE_DIR}/src/common)
+SET(CLIENT_PATH  ${PROJECT_SOURCE_DIR}/src/client)
+SET(SERVER_PATH  ${PROJECT_SOURCE_DIR}/src/server)
+SET(PLUGIN_PATH  ${PROJECT_SOURCE_DIR}/src/plugin)
+SET(DPL_PATH     ${PROJECT_SOURCE_DIR}/src/dpl)
+
+SET(TARGET_SERVER "authentication-server")
+SET(TARGET_CLIENT "authentication-server-client")
+SET(TARGET_CLIENT_ADMIN "authentication-server-client-admin")
+SET(TARGET_COMMON "authentication-server-commons")
+
+ADD_SUBDIRECTORY(include)
+ADD_SUBDIRECTORY(common)
+ADD_SUBDIRECTORY(client)
+ADD_SUBDIRECTORY(server)

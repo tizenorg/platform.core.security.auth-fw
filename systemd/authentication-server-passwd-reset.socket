@@ -1,0 +1,14 @@
+[Socket]
+ListenStream=/run/.authentication-server-api-passwd-reset.sock
+SocketMode=0777
+SmackLabelIPIn=*
+SmackLabelIPOut=@
+
+Service=authentication-server.service
+
+[Unit]
+Wants=authentication-server.target
+Before=authetication-server.target
+
+[Install]
+WantedBy=sockets.target

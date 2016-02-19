@@ -1,0 +1,13 @@
+[Unit]
+Description=Start authentication server
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/authentication-server
+Sockets=authentication-server-passwd-check.socket
+Sockets=authentication-server-passwd-set.socket
+Sockets=authentication-server-passwd-reset.socket
+Sockets=authentication-server-passwd-policy.socket
+
+[Install]
+WantedBy=multi-user.target
