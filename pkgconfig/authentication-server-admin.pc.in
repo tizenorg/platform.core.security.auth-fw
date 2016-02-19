@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@LIB_INSTALL_DIR@
+includedir=${prefix}/include
+
+Name: authentication-server-admin
+Description: Authentication server admin
+Version: 1.0.1
+Requires:
+Libs: -L${libdir} -lauthentication-server-client-admin -lauthentication-server-commons
+Cflags: -I${includedir}/authentication-server
