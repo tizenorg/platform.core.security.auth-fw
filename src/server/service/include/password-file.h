@@ -73,8 +73,11 @@ namespace AuthPasswd
         void setMaxHistorySize(unsigned int history);
         unsigned int getMaxHistorySize() const;
 
+        unsigned int getExpireTime() const;
+        void setExpireTime(unsigned int expireTime);
+
         unsigned int getExpireTimeLeft() const;
-        void setExpireTime(time_t expireTime);
+        void setExpireTimeLeft(time_t expireTimeLeft);
 
         //attempt manipulating functions
         unsigned int getAttempt() const;
@@ -122,7 +125,8 @@ namespace AuthPasswd
         PasswordList m_passwordHistory;
         unsigned int m_maxAttempt;
         unsigned int m_maxHistorySize;
-        time_t       m_expireTime;
+        unsigned int m_expireTime;
+        time_t       m_expireTimeLeft;
         bool         m_passwordActive;
         bool         m_passwordRcvActive;
 

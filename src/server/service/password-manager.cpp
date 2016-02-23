@@ -205,19 +205,15 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PasswordManager::setPassword(const unsigned int passwdType, 
+    int PasswordManager::setPassword(const unsigned int passwdType,
                                      const std::string &currentPassword,
                                      const std::string &newPassword,
-                                     const unsigned int currentUser,
-                                     const unsigned int receivedAttempts,
-                                     const unsigned int receivedDays,
-                                     const unsigned int receivedHistory)
+                                     const unsigned int currentUser)
     {
         LogSecureDebug("curUser = " << currentUser << ", pwdType = " << passwdType <<
-                       ", curPwd = " << currentPassword << ", newPwd = " << newPassword <<
-                       ", recAtt = " << receivedAttempts << ", recDays = " << receivedDays <<
-                       ", recHistory = " << receivedHistory);
+                       ", curPwd = " << currentPassword << ", newPwd = " << newPassword);
 
+        unsigned int receivedDays = PASSWORD_INFINITE_EXPIRATION_DAYS;
         time_t valid_secs = 0;
 
         existPassword(currentUser);
@@ -247,11 +243,6 @@ namespace AuthPasswd
 
         switch(passwdType) {
             case AUTH_PWD_NORMAL:
-                // You remove password and set up recAttempts or recDays
-                if (newPassword.empty() && (receivedAttempts != 0 || receivedDays != 0)) {
-                    LogError("Attempts or receivedDays is not equal 0");
-                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                }
 
                 //increment attempt count before checking it against max attempt count
                 itPwd->second.incrementAttempt();
@@ -279,6 +270,9 @@ namespace AuthPasswd
                     }
                 }
 
+                if (!newPassword.empty())
+                    receivedDays = itPwd->second.getExpireTime();
+
                 if (!calculateExpiredTime(receivedDays, valid_secs)) {
                     LogError("Received expiration time incorrect.");
                     return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -286,9 +280,7 @@ namespace AuthPasswd
 
                 //setting password
                 itPwd->second.setPassword(AUTH_PWD_NORMAL, newPassword);
-                itPwd->second.setMaxAttempt(receivedAttempts);
-                itPwd->second.setExpireTime(valid_secs);
-                itPwd->second.setMaxHistorySize(receivedHistory);
+                itPwd->second.setExpireTimeLeft(valid_secs);
                 itPwd->second.writeMemoryToFile();
                 break;
 
@@ -310,15 +302,12 @@ namespace AuthPasswd
 
     int PasswordManager::setPasswordRecovery(const std::string &curRcvPassword,
                                              const std::string &newPassword,
-                                             const unsigned int currentUser,
-                                             const unsigned int receivedAttempts,
-                                             const unsigned int receivedDays,
-                                             const unsigned int receivedHistory)
+                                             const unsigned int currentUser)
     {
         LogSecureDebug("curUser = " << currentUser << ", curPwd = " << curRcvPassword <<
-                       ", newPwd = " << newPassword << ", recAtt = " << receivedAttempts <<
-                       ", recDays = " << receivedDays << ", recHistory = " << receivedHistory);
+                       ", newPwd = " << newPassword);
 
+        unsigned int receivedDays = PASSWORD_INFINITE_EXPIRATION_DAYS;
         time_t valid_secs = 0;
 
         existPassword(currentUser);
@@ -345,6 +334,12 @@ namespace AuthPasswd
             return AUTH_PASSWD_API_ERROR_NO_PASSWORD;
         }
 
+        receivedDays = itPwd->second.getExpireTime();
+
+        // don't recovery password if MaxAttempt value is not infinite.
+        if (receivedDays != PASSWORD_INFINITE_EXPIRATION_DAYS)
+            return AUTH_PASSWD_API_ERROR_RECOVERY_PASSWORD_RESTRICTED;
+
         if (!itPwd->second.checkPassword(AUTH_PWD_RECOVERY, curRcvPassword)) {
             LogError("Wrong password.");
             return AUTH_PASSWD_API_ERROR_PASSWORD_MISMATCH;
@@ -368,9 +363,7 @@ namespace AuthPasswd
 
         //setting password
         itPwd->second.setPassword(AUTH_PWD_NORMAL, newPassword);
-        itPwd->second.setMaxAttempt(receivedAttempts);
-        itPwd->second.setExpireTime(valid_secs);
-        itPwd->second.setMaxHistorySize(receivedHistory);
+        itPwd->second.setExpireTimeLeft(valid_secs);
         itPwd->second.writeMemoryToFile();
 
         return AUTH_PASSWD_API_SUCCESS;
@@ -378,11 +371,9 @@ namespace AuthPasswd
 
     int PasswordManager::resetPassword(const unsigned int passwdType,
                                        const std::string &newPassword,
-                                       const unsigned int receivedUser,
-                                       const unsigned int receivedAttempts,
-                                       const unsigned int receivedDays,
-                                       const unsigned int receivedHistory)
+                                       const unsigned int receivedUser)
     {
+        unsigned int receivedDays = PASSWORD_INFINITE_EXPIRATION_DAYS;
         time_t valid_secs = 0;
 
         existPassword(receivedUser);
@@ -390,19 +381,18 @@ namespace AuthPasswd
 
         switch(passwdType) {
             case AUTH_PWD_NORMAL:
+
+                if (!newPassword.empty())
+                    receivedDays = itPwd->second.getExpireTime();
+
                 if (!calculateExpiredTime(receivedDays, valid_secs))
                     return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
-                if (newPassword.empty() && (receivedAttempts != 0 || receivedDays != 0)) {
-                    LogError("Attempts or receivedDays is not equal 0");
-                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                }
                 itPwd->second.resetAttempt();
                 itPwd->second.writeAttemptToFile();
+
                 itPwd->second.setPassword(AUTH_PWD_NORMAL, newPassword);
-                itPwd->second.setMaxAttempt(receivedAttempts);
-                itPwd->second.setExpireTime(valid_secs);
-                itPwd->second.setMaxHistorySize(receivedHistory);
+                itPwd->second.setExpireTimeLeft(valid_secs);
                 itPwd->second.writeMemoryToFile();
                 break;
 
@@ -449,15 +439,13 @@ namespace AuthPasswd
         existPassword(receivedUser);
         PasswordFileMap::iterator itPwd = m_pwdFile.find(receivedUser);
 
-        if (!itPwd->second.isPasswordActive(AUTH_PWD_NORMAL)) {
-            LogError("Current password is not active.");
-            return AUTH_PASSWD_API_ERROR_NO_PASSWORD;
-        }
-
         if (!calculateExpiredTime(receivedDays, valid_secs))
             return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
-        itPwd->second.setExpireTime(valid_secs);
+        if (itPwd->second.isPasswordActive(AUTH_PWD_NORMAL))
+            itPwd->second.setExpireTimeLeft(valid_secs);
+
+        itPwd->second.setExpireTime(receivedDays);
         itPwd->second.writeMemoryToFile();
 
         return AUTH_PASSWD_API_SUCCESS;

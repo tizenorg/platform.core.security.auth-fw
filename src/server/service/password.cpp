@@ -153,29 +153,21 @@ int PasswordService::processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer
     switch(hdr) {
         case PasswordHdrs::HDR_SET_PASSWD: {
             std::string curPasswd, newPasswd;
-            unsigned int passwdType = 0, rec_att = 0, rec_days = 0, rec_history = 0;
+            unsigned int passwdType = 0;
             Deserialization::Deserialize(buffer, passwdType);
             Deserialization::Deserialize(buffer, curPasswd);
             Deserialization::Deserialize(buffer, newPasswd);
-            /* TO DO: Check newPassword based on passwd policy. Get max att, expired date and histoy */
-            result = m_pwdManager.setPassword(passwdType, curPasswd, newPasswd, cur_user, rec_att,
-                                              rec_days, rec_history);
+            /* TO DO: Check newPassword based on passwd policy. */
+            result = m_pwdManager.setPassword(passwdType, curPasswd, newPasswd, cur_user);
             break;
         }
 
         case PasswordHdrs::HDR_SET_PASSWD_RECOVERY: {
             std::string curRcvPasswd, newPasswd;
-            unsigned int rec_att = 0, rec_days = 0, rec_history = 0;
             Deserialization::Deserialize(buffer, curRcvPasswd);
             Deserialization::Deserialize(buffer, newPasswd);
-            /* TO DO: Check newPassword based on passwd policy. Get max att, expired date and histoy */
-
-            // Don't recovery password if MaxAttempt value is not infinite.
-            if (rec_days != PASSWORD_INFINITE_EXPIRATION_DAYS)
-                return AUTH_PASSWD_API_ERROR_RECOVERY_PASSWORD_RESTRICTED;
-
-            result = m_pwdManager.setPasswordRecovery(curRcvPasswd, newPasswd, cur_user, rec_att,
-                                                      rec_days, rec_history);
+            /* TO DO: Check newPassword based on passwd policy. */
+            result = m_pwdManager.setPasswordRecovery(curRcvPasswd, newPasswd, cur_user);
             break;
         }
 
@@ -201,17 +193,14 @@ int PasswordService::processResetFunctions(PasswordHdrs hdr, MessageBuffer& buff
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
 
     std::string newPasswd;
-    unsigned int passwdType = 0, rec_user = 0, rec_att = 0, rec_days = 0, rec_history = 0;
+    unsigned int passwdType = 0, rec_user = 0;
 
     switch(hdr) {
         case PasswordHdrs::HDR_RST_PASSWD:
             Deserialization::Deserialize(buffer, passwdType);
             Deserialization::Deserialize(buffer, newPasswd);
             Deserialization::Deserialize(buffer, rec_user);
-
-            /* TO DO: Get max att, expired date and history */
-            result = m_pwdManager.resetPassword(passwdType, newPasswd, rec_user, rec_att, rec_days,
-                                                rec_history);
+            result = m_pwdManager.resetPassword(passwdType, newPasswd, rec_user);
             break;
 
         default:

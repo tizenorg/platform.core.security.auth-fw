@@ -52,17 +52,13 @@ namespace AuthPasswd
 
         //setting functions
         int setPassword(const unsigned int passwdType, const std::string &currentPassword,
-                        const std::string &newPassword, const unsigned int currentUser,
-                        const unsigned int receivedAttempts, const unsigned int receivedDays,
-                        const unsigned int receivedHistory);
+                        const std::string &newPassword, const unsigned int currentUser);
         int setPasswordRecovery(const std::string &curRcvPassword, const std::string &newPassword,
-                        const unsigned int currentUser, const unsigned int receivedAttempts,
-                        const unsigned int receivedDays, const unsigned int receivedHistory);
+                        const unsigned int currentUser);
 
         //resetting functions
         int resetPassword(const unsigned int passwdType, const std::string &newPassword,
-                          const unsigned int receivedUser, const unsigned int receivedAttempts,
-                          const unsigned int receivedDays, const unsigned int receivedHistory);
+                          const unsigned int receivedUser);
 
         //setting policy on the current passwd
         int setPasswordMaxAttempts(const unsigned int receivedUser,
