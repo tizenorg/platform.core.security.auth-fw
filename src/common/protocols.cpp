@@ -18,7 +18,6 @@
 /*
  * @file        protocols.cpp
  * @author      Bartlomiej Grzelewski (b.grzelewski@samsung.com)
- * @author      Jooseong Lee (jooseong.lee@samsung.com)
  * @version     1.0
  * @brief       List of all protocols supported by authentication password.
  */
@@ -36,12 +35,6 @@ char const * const SERVICE_SOCKET_PASSWD_RESET =
     "/run/.authentication-server-api-passwd-reset.sock";
 char const * const SERVICE_SOCKET_PASSWD_POLICY =
     "/run/.authentication-server-api-passwd-policy.sock";
-
-const size_t MAX_PASSWORD_LEN = 32;
-const unsigned int MAX_PASSWORD_HISTORY = 50;
-const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS = 0;
-const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT = 0;
-const unsigned int PASSWORD_API_NO_EXPIRATION = 0xFFFFFFFF;
 
 } // namespace AuthPasswd
 

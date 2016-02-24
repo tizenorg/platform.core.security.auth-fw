@@ -34,9 +34,9 @@
 #include <message-buffer.h>
 #include <connection-info.h>
 #include <protocols.h>
-#include <policy.h>
 
 #include <password-manager.h>
+#include <policy-manager.h>
 
 namespace AuthPasswd
 {
@@ -81,6 +81,7 @@ namespace AuthPasswd
 
         // service attributes
         PasswordManager m_pwdManager;
+        PolicyManager m_policyManager;
         ConnectionInfoMap m_connectionInfoMap;
     };
 } // namespace AuthPasswd

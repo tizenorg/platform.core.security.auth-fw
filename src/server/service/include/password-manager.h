@@ -41,7 +41,7 @@ namespace AuthPasswd
 
         //checking functions
         //no const in checkPassword, attempts are update
-        int checkPassword(const unsigned int passwdType, const std::string& challenge,
+        int checkPassword(const unsigned int passwdType, const std::string &challenge,
                           const unsigned int currentUser, unsigned int &currentAttempt,
                           unsigned int &maxAttempt, unsigned int &expirationTime);
         int isPwdValid(const unsigned int passwdType, const unsigned int currentUser,
@@ -61,10 +61,10 @@ namespace AuthPasswd
                           const unsigned int receivedUser);
 
         //setting policy on the current passwd
-        int setPasswordMaxAttempts(const unsigned int receivedUser,
+        void setPasswordMaxAttempts(const unsigned int receivedUser,
                                    const unsigned int receivedAttempts);
-        int setPasswordValidity(const unsigned int receivedUser, const unsigned int receivedDays);
-        int setPasswordHistory(const unsigned int receivedUser, const unsigned int receivedHistory);
+        void setPasswordValidity(const unsigned int receivedUser, const unsigned int receivedDays);
+        void setPasswordHistory(const unsigned int receivedUser, const unsigned int receivedHistory);
 
     private:
         //managing functions

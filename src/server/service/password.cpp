@@ -34,6 +34,7 @@
 
 #include <password.h>
 
+#include <auth-passwd-policy-types.h>
 #include <auth-passwd-error.h>
 #include <password-exception.h>
 
@@ -141,7 +142,6 @@ int PasswordService::processCheckFunctions(PasswordHdrs hdr, MessageBuffer& buff
             LogError("Unknown msg header.");
             Throw(Exception::IncorrectHeader);
     }
-
     return result;
 }
 
@@ -150,15 +150,16 @@ int PasswordService::processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer
 {
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
 
-    switch(hdr) {
+    switch (hdr) {
         case PasswordHdrs::HDR_SET_PASSWD: {
             std::string curPasswd, newPasswd;
             unsigned int passwdType = 0;
             Deserialization::Deserialize(buffer, passwdType);
             Deserialization::Deserialize(buffer, curPasswd);
             Deserialization::Deserialize(buffer, newPasswd);
-            /* TO DO: Check newPassword based on passwd policy. */
-            result = m_pwdManager.setPassword(passwdType, curPasswd, newPasswd, cur_user);
+            result = m_policyManager.checkPolicy(passwdType, curPasswd, newPasswd, cur_user);
+            if (result == AUTH_PASSWD_API_SUCCESS)
+                result = m_pwdManager.setPassword(passwdType, curPasswd, newPasswd, cur_user);
             break;
         }
 
@@ -166,8 +167,9 @@ int PasswordService::processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer
             std::string curRcvPasswd, newPasswd;
             Deserialization::Deserialize(buffer, curRcvPasswd);
             Deserialization::Deserialize(buffer, newPasswd);
-            /* TO DO: Check newPassword based on passwd policy. */
-            result = m_pwdManager.setPasswordRecovery(curRcvPasswd, newPasswd, cur_user);
+            result = m_policyManager.checkPolicy(AUTH_PWD_NORMAL, curRcvPasswd, newPasswd, cur_user);
+            if (result == AUTH_PASSWD_API_SUCCESS)
+                result = m_pwdManager.setPasswordRecovery(curRcvPasswd, newPasswd, cur_user);
             break;
         }
 
@@ -184,7 +186,6 @@ int PasswordService::processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer
             LogError("Unknown msg header.");
             Throw(Exception::IncorrectHeader);
     }
-
     return result;
 }
 
@@ -192,10 +193,10 @@ int PasswordService::processResetFunctions(PasswordHdrs hdr, MessageBuffer& buff
 {
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
 
-    std::string newPasswd;
+    std::string newPasswd, emptyStr="";
     unsigned int passwdType = 0, rec_user = 0;
 
-    switch(hdr) {
+    switch (hdr) {
         case PasswordHdrs::HDR_RST_PASSWD:
             Deserialization::Deserialize(buffer, passwdType);
             Deserialization::Deserialize(buffer, newPasswd);
@@ -207,37 +208,57 @@ int PasswordService::processResetFunctions(PasswordHdrs hdr, MessageBuffer& buff
             LogError("Unknown msg header.");
             Throw(Exception::IncorrectHeader);
     }
-
     return result;
 }
 
 int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buffer)
 {
-    int result = AUTH_PASSWD_API_SUCCESS;
-/*
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
+    int rec_user = 0;
+    auth_password_policy policy;
 
-    policy_h *p_policy;
-    unsigned int rec_user = 0, rec_att = 0, rec_days = 0, rec_history = 0;
+    switch (hdr) {
+        case PasswordHdrs::HDR_SET_PASSWD_POLICY:
+            Deserialization::Deserialize(buffer, policy.policyFlag);
+            Deserialization::Deserialize(buffer, policy.uid);
+            Deserialization::Deserialize(buffer, policy.maxAttempts);
+            Deserialization::Deserialize(buffer, policy.validPeriod);
+            Deserialization::Deserialize(buffer, policy.historySize);
+            Deserialization::Deserialize(buffer, policy.minLength);
+            Deserialization::Deserialize(buffer, policy.minComplexCharNumber);
+            Deserialization::Deserialize(buffer, policy.maxCharOccurrences);
+            Deserialization::Deserialize(buffer, policy.maxNumSeqLength);
+            Deserialization::Deserialize(buffer, policy.qualityType);
+            Deserialization::Deserialize(buffer, policy.pattern);
+            Deserialization::Deserialize(buffer, policy.forbiddenPasswds);
 
-    swithch(hdr) {
-        case PasswordHdrs::HDR_SET_PASSWD_POLICY: {
-             Deserialization::Deserialize(buffer, p_policy);
+            result = m_policyManager.setPolicy(policy);
 
-             result = m_policyManager.setPolicy(p_policy);
+            if (result == AUTH_PASSWD_API_SUCCESS) {
+                if (policy.policyFlag & (1 << POLICY_MAX_ATTEMPTS))
+                    m_pwdManager.setPasswordMaxAttempts(policy.uid, policy.maxAttempts);
+                if (policy.policyFlag & (1 << POLICY_VALID_PERIOD))
+                    m_pwdManager.setPasswordValidity(policy.uid, policy.validPeriod);
+                if (policy.policyFlag & (1 << POLICY_HISTORY_SIZE))
+                    m_pwdManager.setPasswordHistory(policy.uid, policy.historySize);
+            }
+            break;
 
-             if(result == AUTH_PASSWD_API_SUCCESS)
-                 m_pwdManager.setPasswordMaxAttempts(rec_user, rec_att);
-                 m_pwdManager.setPasswordValidity(rec_user, rec_days);
-                 m_pwdManager.setPasswordHistory(rec_user, rec_history);
-             }
-             break;
+        case PasswordHdrs::HDR_DIS_PASSWD_POLICY:
+            Deserialization::Deserialize(buffer, rec_user);
+            result = m_policyManager.disablePolicy(rec_user);
+            if (result == AUTH_PASSWD_API_SUCCESS) {
+                m_pwdManager.setPasswordMaxAttempts(rec_user, PASSWORD_INFINITE_ATTEMPT_COUNT);
+                m_pwdManager.setPasswordValidity(rec_user, PASSWORD_INFINITE_EXPIRATION_DAYS);
+                m_pwdManager.setPasswordHistory(rec_user, 0);
+            }
+            break;
 
         default:
             LogError("Unknown msg header.");
             Throw(Exception::IncorrectHeader);
     }
-*/
+
     return result;
 }
 

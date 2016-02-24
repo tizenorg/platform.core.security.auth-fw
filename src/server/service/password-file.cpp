@@ -45,7 +45,7 @@
 #include <auth-passwd-error.h>
 
 #include <error-description.h>
-#include <protocols.h>
+#include <policy.h>
 #include <password-exception.h>
 #include <password-file-buffer.h>
 
@@ -152,7 +152,6 @@ namespace AuthPasswd
     {
         // check if data directory exists
         // if not create it
-
         std::string userDir = createDir(DATA_DIR.c_str(), m_user);
 
         if (!dirExists(DATA_DIR.c_str())) {
