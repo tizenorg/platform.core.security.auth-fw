@@ -36,7 +36,7 @@ namespace AuthPasswd
     class PolicyFile
     {
     public:
-        PolicyFile(const unsigned int user);
+        PolicyFile(unsigned int user);
 
         void enable();
         void disable();
@@ -73,7 +73,7 @@ namespace AuthPasswd
         void resetState();
         bool fileExists(const std::string &filename) const;
         bool dirExists(const std::string &dirpath) const;
-        std::string createDir(const std::string &dir, const unsigned int user) const;
+        std::string createDir(const std::string &dir, unsigned int user) const;
 
         //user name
         unsigned int m_user;

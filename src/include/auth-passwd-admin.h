@@ -51,28 +51,27 @@
 extern "C" {
 #endif
 
-int auth_passwd_reset_passwd(const password_type passwd_type,
-                             const uid_t uid,
+int auth_passwd_reset_passwd(password_type passwd_type,
+                             uid_t uid,
                              const char *new_passwd);
 
 int auth_passwd_new_policy(policy_h **pp_policy);
 
-int auth_passwd_set_user(policy_h *p_policy, const uid_t uid);
+int auth_passwd_set_user(policy_h *p_policy, uid_t uid);
 
-int auth_passwd_set_max_attempts(policy_h *p_policy, const unsigned int max_attempts);
+int auth_passwd_set_max_attempts(policy_h *p_policy, unsigned int max_attempts);
 
-int auth_passwd_set_validity(policy_h *p_policy, const unsigned int valid_days);
+int auth_passwd_set_validity(policy_h *p_policy, unsigned int valid_days);
 
-int auth_passwd_set_history_size(policy_h *p_policy, const unsigned int history_size);
+int auth_passwd_set_history_size(policy_h *p_policy, unsigned int history_size);
 
-int auth_passwd_set_min_length(policy_h *p_policy, const unsigned int min_length);
+int auth_passwd_set_min_length(policy_h *p_policy, unsigned int min_length);
 
-int auth_passwd_set_minComplexCharNumber(policy_h *p_policy,
-                                         const unsigned int minComplexCharNumber);
+int auth_passwd_set_minComplexCharNumber(policy_h *p_policy, unsigned int minComplexCharNumber);
 
-int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, const unsigned int maxCharOccurrences);
+int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, unsigned int maxCharOccurrences);
 
-int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, const unsigned int maxNumSeqLength);
+int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, unsigned int maxNumSeqLength);
 
 int auth_passwd_set_quality(policy_h *p_policy, password_quality_type quality_type);
 
@@ -84,7 +83,7 @@ int auth_passwd_set_policy(policy_h *p_policy);
 
 void auth_passwd_free_policy(policy_h *p_policy);
 
-int auth_passwd_disable_policy(const uid_t uid);
+int auth_passwd_disable_policy(uid_t uid);
 
 #ifdef __cplusplus
 }

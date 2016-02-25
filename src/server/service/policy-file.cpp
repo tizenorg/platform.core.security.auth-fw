@@ -51,7 +51,7 @@ namespace {
 
 namespace AuthPasswd
 {
-    PolicyFile::PolicyFile(const unsigned int user): m_user(user),
+    PolicyFile::PolicyFile(unsigned int user): m_user(user),
                                 m_enable(false),
                                 m_minLength(0),
                                 m_minComplexCharNumber(0),
@@ -129,7 +129,7 @@ namespace AuthPasswd
         return ((stat(dirpath.c_str(), &buf) == 0) && (((buf.st_mode) & S_IFMT) == S_IFDIR));
     }
 
-    std::string PolicyFile::createDir(const std::string &dir, const unsigned int user) const
+    std::string PolicyFile::createDir(const std::string &dir, unsigned int user) const
     {
         std::string User = std::to_string(user);
         return dir + "/" + User;

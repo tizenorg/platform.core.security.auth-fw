@@ -137,7 +137,7 @@ namespace AuthPasswd
         }
     }
 
-    PasswordFile::PasswordFile(const unsigned int user): m_user(user),
+    PasswordFile::PasswordFile(unsigned int user): m_user(user),
                                   m_passwordCurrent(new NoPassword()),
                                   m_passwordRecovery(new NoPassword()),
                                   m_maxAttempt(PASSWORD_INFINITE_ATTEMPT_COUNT),
@@ -265,7 +265,7 @@ namespace AuthPasswd
         return ((stat(dirpath.c_str(), &buf) == 0) && (((buf.st_mode) & S_IFMT) == S_IFDIR));
     }
 
-    std::string PasswordFile::createDir(const std::string &dir, const unsigned int user) const
+    std::string PasswordFile::createDir(const std::string &dir, unsigned int user) const
     {
         std::string User = std::to_string(user);
         return dir + "/" + User;
@@ -424,7 +424,7 @@ namespace AuthPasswd
         AttemptFile.close();
     }
 
-    bool PasswordFile::isPasswordActive(const unsigned int passwdType) const
+    bool PasswordFile::isPasswordActive(unsigned int passwdType) const
     {
         bool ret = false;
 
@@ -495,7 +495,7 @@ namespace AuthPasswd
         return false;
     }
 
-    void PasswordFile::setPassword(const unsigned int passwdType, const std::string &password)
+    void PasswordFile::setPassword(unsigned int passwdType, const std::string &password)
     {
         if (passwdType == AUTH_PWD_NORMAL) {
             //replace current password with new one
@@ -525,7 +525,7 @@ namespace AuthPasswd
         }
     }
 
-    bool PasswordFile::checkPassword(const unsigned int passwdType, const std::string &password) const
+    bool PasswordFile::checkPassword(unsigned int passwdType, const std::string &password) const
     {
         bool ret = false;
         if (passwdType == AUTH_PWD_NORMAL)

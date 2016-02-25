@@ -45,8 +45,8 @@ inline bool isPasswordIncorrect(const char* pwd)
 } // namespace anonymous
 
 AUTH_PASSWD_API
-int auth_passwd_reset_passwd(const password_type passwd_type,
-                             const uid_t uid,
+int auth_passwd_reset_passwd(password_type passwd_type,
+                             uid_t uid,
                              const char *new_passwd)
 {
     using namespace AuthPasswd;
@@ -98,7 +98,7 @@ int auth_passwd_new_policy(policy_h **pp_policy)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_user(policy_h *p_policy, const uid_t uid)
+int auth_passwd_set_user(policy_h *p_policy, uid_t uid)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -109,7 +109,7 @@ int auth_passwd_set_user(policy_h *p_policy, const uid_t uid)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_max_attempts(policy_h *p_policy, const unsigned int max_attempts)
+int auth_passwd_set_max_attempts(policy_h *p_policy, unsigned int max_attempts)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -120,7 +120,7 @@ int auth_passwd_set_max_attempts(policy_h *p_policy, const unsigned int max_atte
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_validity(policy_h *p_policy, const unsigned int valid_days)
+int auth_passwd_set_validity(policy_h *p_policy, unsigned int valid_days)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -131,7 +131,7 @@ int auth_passwd_set_validity(policy_h *p_policy, const unsigned int valid_days)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_history_size(policy_h *p_policy, const unsigned int history_size)
+int auth_passwd_set_history_size(policy_h *p_policy, unsigned int history_size)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -142,7 +142,7 @@ int auth_passwd_set_history_size(policy_h *p_policy, const unsigned int history_
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_min_length(policy_h *p_policy, const unsigned int min_length)
+int auth_passwd_set_min_length(policy_h *p_policy, unsigned int min_length)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -153,8 +153,7 @@ int auth_passwd_set_min_length(policy_h *p_policy, const unsigned int min_length
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_minComplexCharNumber(policy_h *p_policy,
-                                         const unsigned int minComplexCharNumber)
+int auth_passwd_set_minComplexCharNumber(policy_h *p_policy, unsigned int minComplexCharNumber)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -165,7 +164,7 @@ int auth_passwd_set_minComplexCharNumber(policy_h *p_policy,
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, const unsigned int maxCharOccurrences)
+int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, unsigned int maxCharOccurrences)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -176,7 +175,7 @@ int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, const unsigned int ma
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, const unsigned int maxNumSeqLength)
+int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, unsigned int maxNumSeqLength)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
@@ -275,7 +274,7 @@ void auth_passwd_free_policy(policy_h *p_policy)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_disable_policy(const uid_t uid)
+int auth_passwd_disable_policy(uid_t uid)
 {
     using namespace AuthPasswd;
 

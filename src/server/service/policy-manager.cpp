@@ -37,18 +37,17 @@
 
 namespace AuthPasswd
 {
-
-    void PolicyManager::addPolicy(const unsigned int user)
+    void PolicyManager::addPolicy(unsigned int user)
     {
         m_policyFile.insert(PolicyFileMap::value_type(user, PolicyFile(user)));
     }
 
-    void PolicyManager::removePolicy(const unsigned int user)
+    void PolicyManager::removePolicy(unsigned int user)
     {
         m_policyFile.erase(user);
     }
 
-    void PolicyManager::existPolicy(const unsigned int user)
+    void PolicyManager::existPolicy(unsigned int user)
     {
         PolicyFileMap::iterator itPwd = m_policyFile.find(user);
         if (itPwd != m_policyFile.end())
@@ -58,10 +57,10 @@ namespace AuthPasswd
         return;
     }
 
-    int PolicyManager::checkPolicy(const unsigned int passwdType,
+    int PolicyManager::checkPolicy(unsigned int passwdType,
                                    const std::string &currentPassword,
                                    const std::string &newPassword,
-                                   const unsigned int user)
+                                   unsigned int user)
     {
         LogSecureDebug("Inside checkPolicy function.");
 
@@ -113,7 +112,7 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PolicyManager::setPolicy(const auth_password_policy policy)
+    int PolicyManager::setPolicy(auth_password_policy policy)
     {
         LogSecureDebug("Inside setPolicy function.");
 
@@ -258,7 +257,7 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PolicyManager::disablePolicy(const unsigned int user)
+    int PolicyManager::disablePolicy(unsigned int user)
     {
         LogSecureDebug("Inside disablePolicy function.");
 

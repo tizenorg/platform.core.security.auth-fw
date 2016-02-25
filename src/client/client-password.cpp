@@ -48,7 +48,7 @@ inline bool isPasswordIncorrect(const char* passwd)
 } // namespace anonymous
 
 AUTH_PASSWD_API
-int auth_passwd_check_passwd(const password_type passwd_type,
+int auth_passwd_check_passwd(password_type passwd_type,
                              const char *passwd,
                              unsigned int *current_attempts,
                              unsigned int *max_attempts,
@@ -107,7 +107,7 @@ int auth_passwd_check_passwd(const password_type passwd_type,
 }
 
 AUTH_PASSWD_API
-int auth_passwd_check_passwd_state(const password_type passwd_type,
+int auth_passwd_check_passwd_state(password_type passwd_type,
                                    unsigned int *current_attempts,
                                    unsigned int *max_attempts,
                                    unsigned int *valid_secs)
@@ -150,7 +150,7 @@ int auth_passwd_check_passwd_state(const password_type passwd_type,
 }
 
 AUTH_PASSWD_API
-int auth_passwd_check_passwd_reused(const password_type passwd_type, 
+int auth_passwd_check_passwd_reused(password_type passwd_type, 
                                     const char *passwd,
                                     int *is_reused)
 {
@@ -185,7 +185,7 @@ int auth_passwd_check_passwd_reused(const password_type passwd_type,
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_passwd(const password_type passwd_type,
+int auth_passwd_set_passwd(password_type passwd_type,
                            const char *cur_passwd,
                            const char *new_passwd)
 {

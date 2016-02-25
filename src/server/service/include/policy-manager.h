@@ -40,22 +40,22 @@ namespace AuthPasswd
         typedef std::map<unsigned int, PolicyFile> PolicyFileMap;
 
         // policy checking functions
-        int checkPolicy(const unsigned int passwdType,
+        int checkPolicy(unsigned int passwdType,
                         const std::string &currentPassword,
                         const std::string &newPassword,
-                        const unsigned int user);
+                        unsigned int user);
 
         // policy setting functions
-        int setPolicy(const auth_password_policy policy);
+        int setPolicy(auth_password_policy policy);
 
         // policy disabling functions
-        int disablePolicy(const unsigned int user);
+        int disablePolicy(unsigned int user);
 
     private:
         // managing functions
-        void addPolicy(const unsigned int user);
-        void removePolicy(const unsigned int user);
-        void existPolicy(const unsigned int user);
+        void addPolicy(unsigned int user);
+        void removePolicy(unsigned int user);
+        void existPolicy(unsigned int user);
 
         PolicyFileMap m_policyFile;
     };

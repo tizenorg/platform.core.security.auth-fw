@@ -60,15 +60,15 @@ namespace AuthPasswd
     class PasswordFile
     {
     public:
-        PasswordFile(const unsigned int user);
+        PasswordFile(unsigned int user);
 
         void writeMemoryToFile() const;
         void writeAttemptToFile() const;
 
-        void setPassword(const unsigned int passwdType, const std::string &password);
-        bool checkPassword(const unsigned int passwdType, const std::string &password) const;
+        void setPassword(unsigned int passwdType, const std::string &password);
+        bool checkPassword(unsigned int passwdType, const std::string &password) const;
 
-        bool isPasswordActive(const unsigned int passwdType) const;
+        bool isPasswordActive(unsigned int passwdType) const;
 
         void setMaxHistorySize(unsigned int history);
         unsigned int getMaxHistorySize() const;
@@ -112,7 +112,7 @@ namespace AuthPasswd
         void resetState();
         bool fileExists(const std::string &filename) const;
         bool dirExists(const std::string &dirpath) const;
-        std::string createDir(const std::string &dir, const unsigned int user) const;
+        std::string createDir(const std::string &dir, unsigned int user) const;
 
         mutable TimePoint m_retryTimerStart;
 
