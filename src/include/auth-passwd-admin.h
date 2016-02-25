@@ -51,21 +51,21 @@
 extern "C" {
 #endif
 
-int auth_passwd_reset_passwd(const password_type passwd_type,
-                             const uid_t uid,
+int auth_passwd_reset_passwd(password_type passwd_type,
+                             uid_t uid,
                              const char *new_passwd);
 
 int auth_passwd_new_policy(policy_h **pp_policy);
 
-int auth_passwd_set_user(policy_h *p_policy, const uid_t uid);
+int auth_passwd_set_user(policy_h *p_policy, uid_t uid);
 
-int auth_passwd_set_max_attempts(policy_h *p_policy, const unsigned int max_attempts);
+int auth_passwd_set_max_attempts(policy_h *p_policy, unsigned int max_attempts);
 
-int auth_passwd_set_validity(policy_h *p_policy, const unsigned int valid_days);
+int auth_passwd_set_validity(policy_h *p_policy, unsigned int valid_days);
 
-int auth_passwd_set_history_size(policy_h *p_policy, const unsigned int history_size);
+int auth_passwd_set_history_size(policy_h *p_policy, unsigned int history_size);
 
-int auth_passwd_set_min_length(policy_h *p_policy, const unsigned int min_length);
+int auth_passwd_set_min_length(policy_h *p_policy, unsigned int min_length);
 
 int auth_passwd_set_minComplexCharNumber(policy_h *p_policy,
                                          const unsigned int minComplexCharNumber);

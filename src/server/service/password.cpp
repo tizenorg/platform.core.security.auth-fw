@@ -115,7 +115,7 @@ void PasswordService::close(const CloseEvent &event)
 }
 
 int PasswordService::processCheckFunctions(PasswordHdrs hdr, MessageBuffer& buffer,
-                                           const unsigned int cur_user, unsigned int &cur_att,
+                                           unsigned int cur_user, unsigned int &cur_att,
                                            unsigned int &max_att, unsigned int &exp_time)
 {
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
@@ -146,7 +146,7 @@ int PasswordService::processCheckFunctions(PasswordHdrs hdr, MessageBuffer& buff
 }
 
 int PasswordService::processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer,
-                                         const unsigned int cur_user, bool &isPwdReused)
+                                         unsigned int cur_user, bool &isPwdReused)
 {
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
 

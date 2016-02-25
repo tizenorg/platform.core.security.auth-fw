@@ -56,17 +56,17 @@ namespace {
 
 namespace AuthPasswd
 {
-    void PasswordManager::addPassword(const unsigned int user)
+    void PasswordManager::addPassword(unsigned int user)
     {
         m_pwdFile.insert(PasswordFileMap::value_type(user, PasswordFile(user)));
     }
 
-    void PasswordManager::removePassword(const unsigned int user)
+    void PasswordManager::removePassword(unsigned int user)
     {
         m_pwdFile.erase(user);
     }
 
-    void PasswordManager::existPassword(const unsigned int user)
+    void PasswordManager::existPassword(unsigned int user)
     {
         PasswordFileMap::iterator itPwd = m_pwdFile.find(user);
         if (itPwd != m_pwdFile.end())
@@ -76,9 +76,9 @@ namespace AuthPasswd
         return;
     }
 
-    int PasswordManager::checkPassword(const unsigned int passwdType,
+    int PasswordManager::checkPassword(unsigned int passwdType,
                                        const std::string &challenge,
-                                       const unsigned int currentUser,
+                                       unsigned int currentUser,
                                        unsigned int &currentAttempt,
                                        unsigned int &maxAttempt,
                                        unsigned int &expirationTime)
@@ -141,7 +141,7 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PasswordManager::isPwdValid(const unsigned int passwdType, const unsigned int currentUser,
+    int PasswordManager::isPwdValid(unsigned int passwdType, unsigned int currentUser,
                                     unsigned int &currentAttempt, unsigned int &maxAttempt,
                                     unsigned int &expirationTime)
     {
@@ -174,8 +174,8 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PasswordManager::isPwdReused(const unsigned int passwdType, const std::string &passwd,
-                                     const unsigned int currentUser, bool &isReused)
+    int PasswordManager::isPwdReused(unsigned int passwdType, const std::string &passwd,
+                                     unsigned int currentUser, bool &isReused)
     {
         existPassword(currentUser);
         PasswordFileMap::iterator itPwd = m_pwdFile.find(currentUser);
@@ -195,14 +195,14 @@ namespace AuthPasswd
             default:
                 LogError("Not supported password type.");
                 return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        } 
+        }
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PasswordManager::setPassword(const unsigned int passwdType,
+    int PasswordManager::setPassword(unsigned int passwdType,
                                      const std::string &currentPassword,
                                      const std::string &newPassword,
-                                     const unsigned int currentUser)
+                                     unsigned int currentUser)
     {
         LogSecureDebug("curUser = " << currentUser << ", pwdType = " << passwdType <<
                        ", curPwd = " << currentPassword << ", newPwd = " << newPassword);
@@ -283,7 +283,7 @@ namespace AuthPasswd
 
     int PasswordManager::setPasswordRecovery(const std::string &curRcvPassword,
                                              const std::string &newPassword,
-                                             const unsigned int currentUser)
+                                             unsigned int currentUser)
     {
         LogSecureDebug("curUser = " << currentUser << ", curPwd = " << curRcvPassword <<
                        ", newPwd = " << newPassword);
@@ -343,9 +343,9 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PasswordManager::resetPassword(const unsigned int passwdType,
+    int PasswordManager::resetPassword(unsigned int passwdType,
                                        const std::string &newPassword,
-                                       const unsigned int receivedUser)
+                                       unsigned int receivedUser)
     {
         unsigned int receivedDays = PASSWORD_INFINITE_EXPIRATION_DAYS;
         time_t valid_secs = 0;
@@ -381,8 +381,8 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    void PasswordManager::setPasswordMaxAttempts(const unsigned int receivedUser,
-                                                const unsigned int receivedAttempts)
+    void PasswordManager::setPasswordMaxAttempts(unsigned int receivedUser,
+                                                unsigned int receivedAttempts)
     {
         LogSecureDebug("received_attempts: " << receivedAttempts);
 
@@ -396,8 +396,8 @@ namespace AuthPasswd
         itPwd->second.writeAttemptToFile();
     }
 
-    void PasswordManager::setPasswordValidity(const unsigned int receivedUser,
-                                             const unsigned int receivedDays)
+    void PasswordManager::setPasswordValidity(unsigned int receivedUser,
+                                             unsigned int receivedDays)
     {
         LogSecureDebug("received_days: " << receivedDays);
 
@@ -415,8 +415,8 @@ namespace AuthPasswd
         itPwd->second.writeMemoryToFile();
     }
 
-    void PasswordManager::setPasswordHistory(const unsigned int receivedUser,
-                                            const unsigned int receivedHistory)
+    void PasswordManager::setPasswordHistory(unsigned int receivedUser,
+                                            unsigned int receivedHistory)
     {
         LogSecureDebug("received_historySize: " << receivedHistory);
 
