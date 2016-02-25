@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=@LIB_INSTALL_DIR@
 includedir=${prefix}/include
 
-Name: authentication-server-admin
+Name: @SERVICE_NAME@-admin
 Description: Authentication server admin
-Version: 1.0.1
+Version: @VERSION@
 Requires:
-Libs: -L${libdir} -lauthentication-server-client-admin -lauthentication-server-commons
-Cflags: -I${includedir}/authentication-server
+Libs: -L${libdir} -l@SERVICE_NAME@-client-admin -l@SERVICE_NAME@-commons
+Cflags: -I${includedir}/@SERVICE_NAME@

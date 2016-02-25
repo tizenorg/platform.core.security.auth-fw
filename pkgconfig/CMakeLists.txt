@@ -17,12 +17,12 @@
 # @brief
 #
 
-CONFIGURE_FILE(authentication-server.pc.in authentication-server.pc @ONLY)
-CONFIGURE_FILE(authentication-server-admin.pc.in authentication-server-admin.pc @ONLY)
+CONFIGURE_FILE(${SERVICE_NAME}.pc.in ${SERVICE_NAME}.pc @ONLY)
+CONFIGURE_FILE(${SERVICE_NAME}-admin.pc.in ${SERVICE_NAME}-admin.pc @ONLY)
 
 INSTALL(FILES
-    ${CMAKE_BINARY_DIR}/pkgconfig/authentication-server.pc
-    ${CMAKE_BINARY_DIR}/pkgconfig/authentication-server-admin.pc
+    ${SERVICE_NAME}.pc
+    ${SERVICE_NAME}-admin.pc
     DESTINATION
     ${LIB_INSTALL_DIR}/pkgconfig
     )

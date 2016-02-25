@@ -1,11 +1,16 @@
+CONFIGURE_FILE(${SERVICE_NAME}.service.in ${SERVICE_NAME}.service @ONLY)
+CONFIGURE_FILE(${SOCK_PASSWD_CHECK}.in ${SOCK_PASSWD_CHECK} @ONLY)
+CONFIGURE_FILE(${SOCK_PASSWD_SET}.in ${SOCK_PASSWD_SET} @ONLY)
+CONFIGURE_FILE(${SOCK_PASSWD_RESET}.in ${SOCK_PASSWD_RESET} @ONLY)
+CONFIGURE_FILE(${SOCK_PASSWD_POLICY}.in ${SOCK_PASSWD_POLICY} @ONLY)
+
 INSTALL(FILES
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server.service
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server.target
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server-passwd-check.socket
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server-passwd-set.socket
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server-passwd-reset.socket
-    ${CMAKE_SOURCE_DIR}/systemd/authentication-server-passwd-policy.socket
-    DESTINATION
-    /usr/lib/systemd/system
+    ${SERVICE_NAME}.service
+    ${SERVICE_NAME}.target
+    ${SOCK_PASSWD_CHECK}
+    ${SOCK_PASSWD_SET}
+    ${SOCK_PASSWD_RESET}
+    ${SOCK_PASSWD_POLICY}
+    DESTINATION ${SYSTEMD_UNIT_DIR}
 )
 

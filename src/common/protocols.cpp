@@ -27,14 +27,10 @@
 
 namespace AuthPasswd {
 
-char const * const SERVICE_SOCKET_PASSWD_CHECK =
-    "/run/.authentication-server-api-passwd-check.sock";
-char const * const SERVICE_SOCKET_PASSWD_SET =
-    "/run/.authentication-server-api-passwd-set.sock";
-char const * const SERVICE_SOCKET_PASSWD_RESET =
-    "/run/.authentication-server-api-passwd-reset.sock";
-char const * const SERVICE_SOCKET_PASSWD_POLICY =
-    "/run/.authentication-server-api-passwd-policy.sock";
+char const * const SERVICE_SOCKET_PASSWD_CHECK = RUN_DIR "/." SOCK_PASSWD_CHECK;
+char const * const SERVICE_SOCKET_PASSWD_SET = RUN_DIR "/." SOCK_PASSWD_SET;
+char const * const SERVICE_SOCKET_PASSWD_RESET = RUN_DIR "/." SOCK_PASSWD_RESET;
+char const * const SERVICE_SOCKET_PASSWD_POLICY = RUN_DIR "/." SOCK_PASSWD_POLICY;
 
 } // namespace AuthPasswd
 

@@ -32,8 +32,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <tzplatform_config.h>
-
 #include <dpl/log/log.h>
 #include <dpl/fstream_accessors.h>
 
@@ -46,7 +44,6 @@
 #include <password-file-buffer.h>
 
 namespace {
-    const std::string DATA_DIR = tzplatform_mkpath(TZ_SYS_DATA, "authentication-server");
     const std::string POLICY_FILE = "/policy";
     const mode_t FILE_MODE = S_IRUSR | S_IWUSR;
     const unsigned int CURRENT_FILE_VERSION = 1;
@@ -65,10 +62,10 @@ namespace AuthPasswd
     {
         // check if data directory exists
         // if not create it
-        std::string userDir = createDir(DATA_DIR.c_str(), m_user);
+        std::string userDir = createDir(RW_DATA_DIR, m_user);
 
-        if (!dirExists(DATA_DIR.c_str())) {
-            if(mkdir(DATA_DIR.c_str(), 0700)) {
+        if (!dirExists(RW_DATA_DIR)) {
+            if(mkdir(RW_DATA_DIR, 0700)) {
                 LogError("Failed to create directory for files. Error: " << strerror(errno));
                 Throw(PasswordException::MakeDirError);
             }
@@ -98,7 +95,7 @@ namespace AuthPasswd
 
     void PolicyFile::preparePolicyFile()
     {
-        std::string policyFile = createDir(DATA_DIR.c_str(), m_user) + POLICY_FILE;
+        std::string policyFile = createDir(RW_DATA_DIR, m_user) + POLICY_FILE;
 
         // check if policy file exists
         if (!fileExists(policyFile)) {
@@ -161,7 +158,7 @@ namespace AuthPasswd
         Serialization::Serialize(policyBuffer, m_pattern);
         Serialization::Serialize(policyBuffer, m_forbiddenPasswds);
 
-        std::string policyFile = createDir(DATA_DIR.c_str(), m_user) + POLICY_FILE;
+        std::string policyFile = createDir(RW_DATA_DIR, m_user) + POLICY_FILE;
         policyBuffer.Save(policyFile);
 
         if (chmod(policyFile.c_str(), FILE_MODE)) {
@@ -173,7 +170,7 @@ namespace AuthPasswd
     void PolicyFile::loadMemoryFromFile()
     {
         PasswordFileBuffer policyBuffer;
-        std::string policyFile = createDir(DATA_DIR.c_str(), m_user) + POLICY_FILE;
+        std::string policyFile = createDir(RW_DATA_DIR, m_user) + POLICY_FILE;
 
         policyBuffer.Load(policyFile);
 
