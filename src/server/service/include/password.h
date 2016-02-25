@@ -72,10 +72,10 @@ namespace AuthPasswd
         //internal service functions
         bool processOne(const ConnectionID &conn, MessageBuffer &buffer, InterfaceID interfaceID);
         int processCheckFunctions(PasswordHdrs hdr, MessageBuffer& buffer,
-                                  const unsigned int cur_user, unsigned int &cur_att,
+                                  unsigned int cur_user, unsigned int &cur_att,
                                   unsigned int &max_att, unsigned int &exp_time);
         int processSetFunctions(PasswordHdrs hdr, MessageBuffer& buffer,
-                                const unsigned int cur_user, bool &isPwdReused);
+                                unsigned int cur_user, bool &isPwdReused);
         int processResetFunctions(PasswordHdrs hdr, MessageBuffer& buffer);
         int processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buffer);
 

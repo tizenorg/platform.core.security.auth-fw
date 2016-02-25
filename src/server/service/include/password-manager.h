@@ -41,40 +41,40 @@ namespace AuthPasswd
 
         //checking functions
         //no const in checkPassword, attempts are update
-        int checkPassword(const unsigned int passwdType, const std::string& challenge,
-                          const unsigned int currentUser, unsigned int &currentAttempt,
+        int checkPassword(unsigned int passwdType, const std::string& challenge,
+                          unsigned int currentUser, unsigned int &currentAttempt,
                           unsigned int &maxAttempt, unsigned int &expirationTime);
-        int isPwdValid(const unsigned int passwdType, const unsigned int currentUser,
+        int isPwdValid(unsigned int passwdType, unsigned int currentUser,
                        unsigned int &currentAttempt, unsigned int &maxAttempt,
                        unsigned int &expirationTime);
-        int isPwdReused(const unsigned int passwdType, const std::string &passwd, 
-                        const unsigned int currentUser, bool &isReused);
+        int isPwdReused(unsigned int passwdType, const std::string &passwd,
+                        unsigned int currentUser, bool &isReused);
 
         //setting functions
-        int setPassword(const unsigned int passwdType, const std::string &currentPassword,
-                        const std::string &newPassword, const unsigned int currentUser,
-                        const unsigned int receivedAttempts, const unsigned int receivedDays,
-                        const unsigned int receivedHistory);
+        int setPassword(unsigned int passwdType, const std::string &currentPassword,
+                        const std::string &newPassword, unsigned int currentUser,
+                        unsigned int receivedAttempts, unsigned int receivedDays,
+                        unsigned int receivedHistory);
         int setPasswordRecovery(const std::string &curRcvPassword, const std::string &newPassword,
-                        const unsigned int currentUser, const unsigned int receivedAttempts,
-                        const unsigned int receivedDays, const unsigned int receivedHistory);
+                        unsigned int currentUser, unsigned int receivedAttempts,
+                        unsigned int receivedDays, unsigned int receivedHistory);
 
         //resetting functions
-        int resetPassword(const unsigned int passwdType, const std::string &newPassword,
-                          const unsigned int receivedUser, const unsigned int receivedAttempts,
-                          const unsigned int receivedDays, const unsigned int receivedHistory);
+        int resetPassword(unsigned int passwdType, const std::string &newPassword,
+                          unsigned int receivedUser, unsigned int receivedAttempts,
+                          unsigned int receivedDays, unsigned int receivedHistory);
 
         //setting policy on the current passwd
-        int setPasswordMaxAttempts(const unsigned int receivedUser,
-                                   const unsigned int receivedAttempts);
-        int setPasswordValidity(const unsigned int receivedUser, const unsigned int receivedDays);
-        int setPasswordHistory(const unsigned int receivedUser, const unsigned int receivedHistory);
+        int setPasswordMaxAttempts(unsigned int receivedUser,
+                                   unsigned int receivedAttempts);
+        int setPasswordValidity(unsigned int receivedUser, unsigned int receivedDays);
+        int setPasswordHistory(unsigned int receivedUser, unsigned int receivedHistory);
 
     private:
         //managing functions
-        void addPassword(const unsigned int user);
-        void removePassword(const unsigned int user);
-        void existPassword(const unsigned int user);
+        void addPassword(unsigned int user);
+        void removePassword(unsigned int user);
+        void existPassword(unsigned int user);
 
         PasswordFileMap m_pwdFile;
     };
