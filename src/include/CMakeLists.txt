@@ -3,5 +3,5 @@ INSTALL(FILES
     ${INCLUDE_PATH}/auth-passwd-admin.h
     ${INCLUDE_PATH}/auth-passwd-policy-types.h
     ${INCLUDE_PATH}/auth-passwd-error.h
-    DESTINATION /usr/include/authentication-server
+    DESTINATION ${INCLUDE_DIR}/${SERVICE_NAME}
     )
