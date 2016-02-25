@@ -1,0 +1,14 @@
+[Socket]
+ListenStream=@RUN_DIR@/.@SOCK_PASSWD_CHECK@
+SocketMode=0777
+SmackLabelIPIn=*
+SmackLabelIPOut=@
+
+Service=@SERVICE_NAME@.service
+
+[Unit]
+Wants=@SERVICE_NAME@.target
+Before=@SERVICE_NAME@.target
+
+[Install]
+WantedBy=sockets.target

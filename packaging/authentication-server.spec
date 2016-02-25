@@ -5,6 +5,9 @@ Release:    1
 Group:      Security/Service
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
+Source1001: %{name}.manifest
+Source1002: lib%{name}-client.manifest
+Source1003: lib%{name}-client-admin.manifest
 BuildRequires: cmake
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(openssl)
@@ -16,45 +19,44 @@ BuildRequires: pkgconfig(libtzplatform-config)
 %description
 Authentication server with client libraries
 
-%package -n libauthentication-server-client
+%package -n lib%{name}-client
 Summary:    Authentication server (client)
 Group:      Security/Libraries
-Requires:   authentication-server = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-%description -n libauthentication-server-client
+%description -n lib%{name}-client
 Authentication server package (client)
 
-%package -n libauthentication-server-client-admin
+%package -n lib%{name}-client-admin
 Summary:    Authentication server (client-admin)
 Group:      Security/Libraries
-Requires:   authentication-server = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-%description -n libauthentication-server-client-admin
+%description -n lib%{name}-client-admin
 Authentication server package (client-admin)
 
-%package -n libauthentication-server-client-devel
+%package -n lib%{name}-client-devel
 Summary:    Authentication server (client-devel)
 Group:      Security/Development
-Requires:   libauthentication-server-client = %{version}-%{release}
-Requires:   libauthentication-server-client-admin = %{version}-%{release}
+Requires:   lib%{name}-client = %{version}-%{release}
+Requires:   lib%{name}-client-admin = %{version}-%{release}
 
-%description -n libauthentication-server-client-devel
+%description -n lib%{name}-client-devel
 Authentication server package (client-devel)
-
-%package -n authentication-server-devel
-Summary:    Authentication (Development)
-Group:      Security/Development
-Requires:   authentication-server = %{version}-%{release}
-
-%description -n authentication-server-devel
-Authentication server package (Development)
 
 %prep
 %setup -q
+cp -a %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} .
+
+%global run_dir %{?TZ_SYS_RUN:%TZ_SYS_RUN/}%{!?TZ_SYS_RUN:/var/run/}
+%global sock_passwd_check %{name}-passwd-check.socket
+%global sock_passwd_set %{name}-passwd-set.socket
+%global sock_passwd_reset %{name}-passwd-reset.socket
+%global sock_passwd_policy %{name}-passwd-policy.socket
 
 %build
 
@@ -65,100 +67,93 @@ export LDFLAGS+="-Wl,--rpath=%{_libdir}"
 
 %cmake . -DVERSION=%{version} \
         -DCMAKE_BUILD_TYPE=%{?build_type:%build_type}%{!?build_type:RELEASE} \
-        -DCMAKE_VERBOSE_MAKEFILE=ON
+        -DCMAKE_VERBOSE_MAKEFILE=ON \
+        -DSERVICE_NAME=%{name} \
+        -DBIN_DIR:PATH=%{_bindir} \
+        -DRUN_DIR:PATH=%{run_dir} \
+        -DSYSTEMD_UNIT_DIR:PATH=%{_unitdir} \
+        -DSOCK_PASSWD_CHECK=%{sock_passwd_check} \
+        -DSOCK_PASSWD_SET=%{sock_passwd_set} \
+        -DSOCK_PASSWD_RESET=%{sock_passwd_reset} \
+        -DSOCK_PASSWD_POLICY=%{sock_passwd_policy}
 
 make %{?jobs:-j%jobs}
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE %{buildroot}/usr/share/license/%{name}
-cp LICENSE %{buildroot}/usr/share/license/libauthentication-server-client
-cp LICENSE %{buildroot}/usr/share/license/libauthentication-server-client-admin
 %make_install
-
-mkdir -p %{buildroot}/usr/lib/systemd/system/multi-user.target.wants
-mkdir -p %{buildroot}/usr/lib/systemd/system/sockets.target.wants
-mkdir -p %{buildroot}/usr/lib/systemd/system/basic.target.wants
-ln -s ../authentication-server.service %{buildroot}/usr/lib/systemd/system/multi-user.target.wants/authentication-server.service
-ln -s ../authentication-server-passwd-check.socket %{buildroot}/usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-check.socket
-ln -s ../authentication-server-passwd-set.socket %{buildroot}/usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-set.socket
-ln -s ../authentication-server-passwd-reset.socket %{buildroot}/usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-reset.socket
-ln -s ../authentication-server-passwd-policy.socket %{buildroot}/usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-policy.socket
-
-%clean
-rm -rf %{buildroot}
+%install_service multi-user.target.wants %{name}.service
+%install_service sockets.target.wants %{sock_passwd_check}
+%install_service sockets.target.wants %{sock_passwd_set}
+%install_service sockets.target.wants %{sock_passwd_reset}
+%install_service sockets.target.wants %{sock_passwd_policy}
 
 %post
+/sbin/ldconfig
 systemctl daemon-reload
 if [ $1 = 1 ]; then
     # installation
-    systemctl start authentication-server.service
+    systemctl start %{name}.service
 fi
 
 if [ $1 = 2 ]; then
     # update
-    systemctl restart authentication-server.service
+    systemctl restart %{name}.service
 fi
 
 %preun
 if [ $1 = 0 ]; then
     # unistall
-    systemctl stop authentication-server.service
+    systemctl stop %{name}.service
 fi
 
 %postun
+/sbin/ldconfig
 if [ $1 = 0 ]; then
     # unistall
     systemctl daemon-reload
 fi
 
-%post -n libauthentication-server-client -p /sbin/ldconfig
+%post -n lib%{name}-client -p /sbin/ldconfig
 
-%postun -n libauthentication-server-client -p /sbin/ldconfig
+%postun -n lib%{name}-client -p /sbin/ldconfig
 
-%post -n libauthentication-server-client-admin -p /sbin/ldconfig
+%post -n lib%{name}-client-admin -p /sbin/ldconfig
 
-%postun -n libauthentication-server-client-admin -p /sbin/ldconfig
+%postun -n lib%{name}-client-admin -p /sbin/ldconfig
 
-%files -n authentication-server
-%manifest %{_datadir}/authentication-server.manifest
-%attr(755,root,root) /usr/bin/authentication-server
-%{_libdir}/libauthentication-server-commons.so.*
-%attr(-,root,root) /usr/lib/systemd/system/multi-user.target.wants/authentication-server.service
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server.service
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server.target
-%attr(-,root,root) /usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-check.socket
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server-passwd-check.socket
-%attr(-,root,root) /usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-set.socket
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server-passwd-set.socket
-%attr(-,root,root) /usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-reset.socket
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server-passwd-reset.socket
-%attr(-,root,root) /usr/lib/systemd/system/sockets.target.wants/authentication-server-passwd-policy.socket
-%attr(-,root,root) /usr/lib/systemd/system/authentication-server-passwd-policy.socket
+%files
+%manifest %{name}.manifest
+%license LICENSE
+%{_bindir}/%{name}
+%{_libdir}/lib%{name}-commons.so.*
+%{_unitdir}/%{name}.target
+%{_unitdir}/%{name}.service
+%{_unitdir}/multi-user.target.wants/%{name}.service
+%{_unitdir}/%{sock_passwd_check}
+%{_unitdir}/%{sock_passwd_set}
+%{_unitdir}/%{sock_passwd_reset}
+%{_unitdir}/%{sock_passwd_policy}
+%{_unitdir}/sockets.target.wants/%{sock_passwd_check}
+%{_unitdir}/sockets.target.wants/%{sock_passwd_set}
+%{_unitdir}/sockets.target.wants/%{sock_passwd_reset}
+%{_unitdir}/sockets.target.wants/%{sock_passwd_policy}
 
-%{_datadir}/license/%{name}
+%files -n lib%{name}-client
+%manifest lib%{name}-client.manifest
+%license LICENSE
+%{_libdir}/lib%{name}-client.so.*
 
-%files -n libauthentication-server-client
-%manifest %{_datadir}/libauthentication-server-client.manifest
-%defattr(-,root,root,-)
-%{_libdir}/libauthentication-server-client.so.*
-%{_datadir}/license/libauthentication-server-client
+%files -n lib%{name}-client-admin
+%manifest lib%{name}-client-admin.manifest
+%license LICENSE
+%{_libdir}/lib%{name}-client-admin.so.*
 
-%files -n libauthentication-server-client-admin
-%manifest %{_datadir}/libauthentication-server-client-admin.manifest
-%defattr(-,root,root,-)
-%{_libdir}/libauthentication-server-client-admin.so.*
-%{_datadir}/license/libauthentication-server-client-admin
-
-%files -n libauthentication-server-client-devel
-%defattr(-,root,root,-)
-%{_libdir}/libauthentication-server-client.so
-%{_libdir}/libauthentication-server-client-admin.so
-%{_libdir}/libauthentication-server-commons.so
-/usr/include/authentication-server/auth-passwd.h
-/usr/include/authentication-server/auth-passwd-admin.h
-/usr/include/authentication-server/auth-passwd-error.h
-/usr/include/authentication-server/auth-passwd-policy-types.h
+%files -n lib%{name}-client-devel
+%{_libdir}/lib%{name}-client.so
+%{_libdir}/lib%{name}-client-admin.so
+%{_libdir}/lib%{name}-commons.so
+%{_includedir}/%{name}/auth-passwd.h
+%{_includedir}/%{name}/auth-passwd-admin.h
+%{_includedir}/%{name}/auth-passwd-error.h
+%{_includedir}/%{name}/auth-passwd-policy-types.h
 %{_libdir}/pkgconfig/*.pc
-

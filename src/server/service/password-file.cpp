@@ -50,7 +50,7 @@
 #include <password-file-buffer.h>
 
 namespace {
-    const std::string DATA_DIR = tzplatform_mkpath(TZ_SYS_DATA, "authentication-server");
+    const std::string DATA_DIR = tzplatform_mkpath(TZ_SYS_DATA, SERVICE_NAME);
     const std::string PASSWORD_FILE = "/password";
     const std::string OLD_VERSION_PASSWORD_FILE = "/password.old";
     const std::string ATTEMPT_FILE = "/attempt";
