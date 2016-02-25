@@ -2,7 +2,7 @@ Name:       authentication-server
 Summary:    Authentication server
 Version:    0.0.1
 Release:    1
-Group:      System/Security
+Group:      Security/Service
 License:    Apache-2.0
 Source0:    %{name}-%{version}.tar.gz
 BuildRequires: cmake
@@ -18,7 +18,7 @@ Authentication server with client libraries
 
 %package -n libauthentication-server-client
 Summary:    Authentication server (client)
-Group:      Development/Libraries
+Group:      Security/Libraries
 Requires:   authentication-server = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -28,7 +28,7 @@ Authentication server package (client)
 
 %package -n libauthentication-server-client-admin
 Summary:    Authentication server (client-admin)
-Group:      Development/Libraries
+Group:      Security/Libraries
 Requires:   authentication-server = %{version}-%{release}
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -38,7 +38,7 @@ Authentication server package (client-admin)
 
 %package -n libauthentication-server-client-devel
 Summary:    Authentication server (client-devel)
-Group:      Development/Libraries
+Group:      Security/Development
 Requires:   libauthentication-server-client = %{version}-%{release}
 Requires:   libauthentication-server-client-admin = %{version}-%{release}
 
@@ -47,7 +47,7 @@ Authentication server package (client-devel)
 
 %package -n authentication-server-devel
 Summary:    Authentication (Development)
-Group:      Development/Libraries
+Group:      Security/Development
 Requires:   authentication-server = %{version}-%{release}
 
 %description -n authentication-server-devel
