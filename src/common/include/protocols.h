@@ -45,14 +45,9 @@ enum class PasswordHdrs
     HDR_SET_PASSWD,
     HDR_SET_PASSWD_RECOVERY,
     HDR_RST_PASSWD,
-    HDR_SET_PASSWD_POLICY
+    HDR_SET_PASSWD_POLICY,
+    HDR_DIS_PASSWD_POLICY
 };
-
-extern const size_t MAX_PASSWORD_LEN;
-extern const unsigned int MAX_PASSWORD_HISTORY;
-extern const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS;
-extern const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT;
-extern const unsigned int PASSWORD_API_NO_EXPIRATION;
 
 } // namespace AuthPasswd
 
