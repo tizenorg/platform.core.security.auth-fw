@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2000 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *  Copyright (c) 2016 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Contact: Jooseong Lee <jooseong.lee@samsung.com>
  *
@@ -17,24 +17,25 @@
  */
 /*
  * @file        protocols.cpp
- * @author      Bartlomiej Grzelewski (b.grzelewski@samsung.com)
+ * @author      Jooseong Lee (jooseong.lee@samsung.com)
  * @version     1.0
  * @brief       List of all protocols supported by authentication password.
  */
 
-#include <protocols.h>
-#include <cstddef>
+#include <policy.h>
 
 namespace AuthPasswd {
 
-char const * const SERVICE_SOCKET_PASSWD_CHECK =
-    "/run/.authentication-server-api-passwd-check.sock";
-char const * const SERVICE_SOCKET_PASSWD_SET =
-    "/run/.authentication-server-api-passwd-set.sock";
-char const * const SERVICE_SOCKET_PASSWD_RESET =
-    "/run/.authentication-server-api-passwd-reset.sock";
-char const * const SERVICE_SOCKET_PASSWD_POLICY =
-    "/run/.authentication-server-api-passwd-policy.sock";
+const size_t MAX_PASSWORD_LEN = 32;
+const unsigned int MAX_PASSWORD_HISTORY = 50;
+const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS = 0;
+const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT = 0;
+const unsigned int PASSWORD_API_NO_EXPIRATION = 0xFFFFFFFF;
+
+const std::string REGEX_QUALITY_UNSPECIFIED = "[.]*";
+const std::string REGEX_QUALITY_SOMETHING = ".+";
+const std::string REGEX_QUALITY_NUMERIC = "^[0-9]+$";
+const std::string REGEX_QUALITY_ALPHABETIC = "^[A-Za-z]+$";
+const std::string REGEX_QUALITY_ALPHANUMERIC = "^[A-Za-z0-9]+$";
 
 } // namespace AuthPasswd
-

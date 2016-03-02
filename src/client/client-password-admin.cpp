@@ -94,6 +94,9 @@ int auth_passwd_new_policy(policy_h **pp_policy)
     } catch (std::bad_alloc& ex) {
         return AUTH_PASSWD_API_ERROR_OUT_OF_MEMORY;
     }
+
+    (*pp_policy)->policyFlag = 0;
+
     return AUTH_PASSWD_API_SUCCESS;
 }
 
@@ -103,6 +106,7 @@ int auth_passwd_set_user(policy_h *p_policy, const uid_t uid)
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_USER);
     p_policy->uid = uid;
     return AUTH_PASSWD_API_SUCCESS;
 }
@@ -113,6 +117,7 @@ int auth_passwd_set_max_attempts(policy_h *p_policy, const unsigned int max_atte
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MAX_ATTEMPTS);
     p_policy->maxAttempts = max_attempts;
     return AUTH_PASSWD_API_SUCCESS;
 }
@@ -123,6 +128,7 @@ int auth_passwd_set_validity(policy_h *p_policy, const unsigned int valid_days)
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_VALID_PERIOD);
     p_policy->validPeriod = valid_days;
     return AUTH_PASSWD_API_SUCCESS;
 }
@@ -133,6 +139,7 @@ int auth_passwd_set_history_size(policy_h *p_policy, const unsigned int history_
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_HISTORY_SIZE);
     p_policy->historySize = history_size;
     return AUTH_PASSWD_API_SUCCESS;
 }
@@ -143,7 +150,42 @@ int auth_passwd_set_min_length(policy_h *p_policy, const unsigned int min_length
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MIN_LENGTH);
     p_policy->minLength = min_length;
+    return AUTH_PASSWD_API_SUCCESS;
+}
+
+AUTH_PASSWD_API
+int auth_passwd_set_minComplexCharNumber(policy_h *p_policy,
+                                         const unsigned int minComplexCharNumber)
+{
+    if (!p_policy)
+        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MIN_COMPLEX_CHAR_NUMBER);
+    p_policy->minComplexCharNumber = minComplexCharNumber;
+    return AUTH_PASSWD_API_SUCCESS;
+}
+
+AUTH_PASSWD_API
+int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, const unsigned int maxCharOccurrences)
+{
+    if (!p_policy)
+        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MAX_CHAR_OCCURRENCES);
+    p_policy->maxCharOccurrences = maxCharOccurrences;
+    return AUTH_PASSWD_API_SUCCESS;
+}
+
+AUTH_PASSWD_API
+int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, const unsigned int maxNumSeqLength)
+{
+    if (!p_policy)
+        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MAX_NUMERIC_SEQ_LENGTH);
+    p_policy->maxNumSeqLength = maxNumSeqLength;
     return AUTH_PASSWD_API_SUCCESS;
 }
 
@@ -153,7 +195,31 @@ int auth_passwd_set_quality(policy_h *p_policy, password_quality_type quality_ty
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_QUALITY_TYPE);
     p_policy->qualityType = quality_type;
+    return AUTH_PASSWD_API_SUCCESS;
+}
+
+AUTH_PASSWD_API
+int auth_passwd_set_pattern(policy_h *p_policy, const char *pattern)
+{
+    if (!p_policy)
+        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_PATTERN);
+    p_policy->pattern = std::string(pattern);
+    return AUTH_PASSWD_API_SUCCESS;
+
+}
+
+AUTH_PASSWD_API
+int auth_passwd_set_forbiddenPasswd(policy_h *p_policy, char *forbiddenPasswd)
+{
+    if (!p_policy || !forbiddenPasswd)
+        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
+    p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_FORBIDDEN_PASSWDS);
+    p_policy->forbiddenPasswds.push_back(forbiddenPasswd);
     return AUTH_PASSWD_API_SUCCESS;
 }
 
@@ -168,10 +234,24 @@ int auth_passwd_set_policy(policy_h *p_policy)
             return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
         }
 
+        if (!(p_policy->policyFlag & (1 << POLICY_USER)))
+            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+
         MessageBuffer send, recv;
 
         Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD_POLICY));
-        Serialization::Serialize(send, p_policy);
+        Serialization::Serialize(send, p_policy->policyFlag);
+        Serialization::Serialize(send, p_policy->uid);
+        Serialization::Serialize(send, p_policy->maxAttempts);
+        Serialization::Serialize(send, p_policy->validPeriod);
+        Serialization::Serialize(send, p_policy->historySize);
+        Serialization::Serialize(send, p_policy->minLength);
+        Serialization::Serialize(send, p_policy->minComplexCharNumber);
+        Serialization::Serialize(send, p_policy->maxCharOccurrences);
+        Serialization::Serialize(send, p_policy->maxNumSeqLength);
+        Serialization::Serialize(send, p_policy->qualityType);
+        Serialization::Serialize(send, p_policy->pattern);
+        Serialization::Serialize(send, p_policy->forbiddenPasswds);
 
         int retCode = sendToServer(SERVICE_SOCKET_PASSWD_POLICY, send.Pop(), recv);
         if (AUTH_PASSWD_API_SUCCESS != retCode) {

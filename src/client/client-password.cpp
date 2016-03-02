@@ -31,8 +31,9 @@
 
 #include <message-buffer.h>
 #include <client-common.h>
-#include <policy.h>
+
 #include <protocols.h>
+#include <policy.h>
 
 #include <auth-passwd.h>
 

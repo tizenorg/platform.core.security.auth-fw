@@ -41,7 +41,7 @@ namespace AuthPasswd
 
         //checking functions
         //no const in checkPassword, attempts are update
-        int checkPassword(const unsigned int passwdType, const std::string& challenge,
+        int checkPassword(const unsigned int passwdType, const std::string &challenge,
                           const unsigned int currentUser, unsigned int &currentAttempt,
                           unsigned int &maxAttempt, unsigned int &expirationTime);
         int isPwdValid(const unsigned int passwdType, const unsigned int currentUser,
@@ -52,23 +52,19 @@ namespace AuthPasswd
 
         //setting functions
         int setPassword(const unsigned int passwdType, const std::string &currentPassword,
-                        const std::string &newPassword, const unsigned int currentUser,
-                        const unsigned int receivedAttempts, const unsigned int receivedDays,
-                        const unsigned int receivedHistory);
+                        const std::string &newPassword, const unsigned int currentUser);
         int setPasswordRecovery(const std::string &curRcvPassword, const std::string &newPassword,
-                        const unsigned int currentUser, const unsigned int receivedAttempts,
-                        const unsigned int receivedDays, const unsigned int receivedHistory);
+                        const unsigned int currentUser);
 
         //resetting functions
         int resetPassword(const unsigned int passwdType, const std::string &newPassword,
-                          const unsigned int receivedUser, const unsigned int receivedAttempts,
-                          const unsigned int receivedDays, const unsigned int receivedHistory);
+                          const unsigned int receivedUser);
 
         //setting policy on the current passwd
-        int setPasswordMaxAttempts(const unsigned int receivedUser,
+        void setPasswordMaxAttempts(const unsigned int receivedUser,
                                    const unsigned int receivedAttempts);
-        int setPasswordValidity(const unsigned int receivedUser, const unsigned int receivedDays);
-        int setPasswordHistory(const unsigned int receivedUser, const unsigned int receivedHistory);
+        void setPasswordValidity(const unsigned int receivedUser, const unsigned int receivedDays);
+        void setPasswordHistory(const unsigned int receivedUser, const unsigned int receivedHistory);
 
     private:
         //managing functions

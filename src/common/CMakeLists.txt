@@ -7,6 +7,7 @@ PKG_CHECK_MODULES(COMMON_DEP
 SET(COMMON_SOURCES
     ${COMMON_PATH}/error-description.cpp
     ${COMMON_PATH}/protocols.cpp
+    ${COMMON_PATH}/policy.cpp
     ${COMMON_PATH}/message-buffer.cpp
     ${COMMON_PATH}/smack-check.cpp
     ${COMMON_PATH}/user-check.cpp
@@ -34,6 +35,7 @@ INCLUDE_DIRECTORIES(SYSTEM
     )
 
 INCLUDE_DIRECTORIES(
+    ${INCLUDE_PATH}
     ${COMMON_PATH}/include
     ${PLUGIN_PATH}/include
     ${DPL_PATH}/core/include
