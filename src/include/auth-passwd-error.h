@@ -40,7 +40,7 @@
 #define AUTH_PASSWD_API_ERROR_OUT_OF_MEMORY -3
 
 /*! \brief   indicating the output buffer size which is passed as parameter is too small */
-#define Auth_PASSWD_API_ERROR_BUFFER_TOO_SMALL -4
+#define AUTH_PASSWD_API_ERROR_BUFFER_TOO_SMALL -4
 
 /*! \brief   indicating Authenticaton Server has been failed for some reason */
 #define AUTH_PASSWD_API_ERROR_SERVER_ERROR -5
@@ -63,20 +63,23 @@
 /*! \brief   indicating password mismatch  */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_MISMATCH -12
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
-#define AUTH_PASSWD_API_ERROR_PASSWORD_RETRY_TIMER -13
+/*! \brief   indicating password is invalid  */
+#define AUTH_PASSWD_API_ERROR_PASSWORD_INVALID -13
 
 /*! \brief   indicating password retry timeout is not occurred yet  */
-#define AUTH_PASSWD_API_ERROR_PASSWORD_MAX_ATTEMPTS_EXCEEDED -14
+#define AUTH_PASSWD_API_ERROR_PASSWORD_RETRY_TIMER -14
 
 /*! \brief   indicating password retry timeout is not occurred yet  */
-#define AUTH_PASSWD_API_ERROR_PASSWORD_EXPIRED -15
+#define AUTH_PASSWD_API_ERROR_PASSWORD_MAX_ATTEMPTS_EXCEEDED -15
 
 /*! \brief   indicating password retry timeout is not occurred yet  */
-#define AUTH_PASSWD_API_ERROR_PASSWORD_REUSED -16
+#define AUTH_PASSWD_API_ERROR_PASSWORD_EXPIRED -16
 
 /*! \brief   indicating password retry timeout is not occurred yet  */
-#define AUTH_PASSWD_API_ERROR_RECOVERY_PASSWORD_RESTRICTED -17
+#define AUTH_PASSWD_API_ERROR_PASSWORD_REUSED -17
+
+/*! \brief   indicating password retry timeout is not occurred yet  */
+#define AUTH_PASSWD_API_ERROR_RECOVERY_PASSWORD_RESTRICTED -18
 
 /*! \brief   indicating the error with unknown reason */
 #define AUTH_PASSWD_API_ERROR_UNKNOWN -255

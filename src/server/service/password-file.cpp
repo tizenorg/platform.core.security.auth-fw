@@ -45,7 +45,7 @@
 #include <auth-passwd-error.h>
 
 #include <error-description.h>
-#include <protocols.h>
+#include <policy.h>
 #include <password-exception.h>
 #include <password-file-buffer.h>
 
@@ -144,14 +144,14 @@ namespace AuthPasswd
                                   m_passwordRecovery(new NoPassword()),
                                   m_maxAttempt(PASSWORD_INFINITE_ATTEMPT_COUNT),
                                   m_maxHistorySize(0),
-                                  m_expireTime(PASSWORD_INFINITE_EXPIRATION_TIME),
+                                  m_expireTime(PASSWORD_INFINITE_EXPIRATION_DAYS),
+                                  m_expireTimeLeft(PASSWORD_INFINITE_EXPIRATION_TIME),
                                   m_passwordActive(false),
                                   m_passwordRcvActive(false),
                                   m_attempt(0)
     {
         // check if data directory exists
         // if not create it
-
         std::string userDir = createDir(DATA_DIR.c_str(), m_user);
 
         if (!dirExists(DATA_DIR.c_str())) {
@@ -177,7 +177,8 @@ namespace AuthPasswd
     {
         m_maxAttempt = PASSWORD_INFINITE_ATTEMPT_COUNT;
         m_maxHistorySize = 0;
-        m_expireTime = PASSWORD_INFINITE_EXPIRATION_TIME;
+        m_expireTime = PASSWORD_INFINITE_EXPIRATION_DAYS;
+        m_expireTimeLeft = PASSWORD_INFINITE_EXPIRATION_TIME;
         m_passwordRcvActive = false;
         m_passwordRecovery.reset(new NoPassword());
         m_passwordActive = false;
@@ -278,14 +279,16 @@ namespace AuthPasswd
 
         LogSecureDebug("User: " << m_user << ", saving max_att: " << m_maxAttempt <<
                        ", history_size: " << m_maxHistorySize << ", m_expireTime: " <<
-                       m_expireTime << ", isActive: " << m_passwordActive << 
-                       ", isRcvActive: " << m_passwordRcvActive);
+                       m_expireTime << ", m_expireTimeLeft: " << m_expireTimeLeft <<
+                       ", isActive: " << m_passwordActive << ", isRcvActive: " <<
+                       m_passwordRcvActive);
 
         //serialize password attributes
         Serialization::Serialize(pwdBuffer, CURRENT_FILE_VERSION);
         Serialization::Serialize(pwdBuffer, m_maxAttempt);
         Serialization::Serialize(pwdBuffer, m_maxHistorySize);
         Serialization::Serialize(pwdBuffer, m_expireTime);
+        Serialization::Serialize(pwdBuffer, m_expireTimeLeft);
         Serialization::Serialize(pwdBuffer, m_passwordRcvActive);
         Serialization::Serialize(pwdBuffer, m_passwordRecovery);
         Serialization::Serialize(pwdBuffer, m_passwordActive);
@@ -318,6 +321,7 @@ namespace AuthPasswd
         Deserialization::Deserialize(pwdBuffer, m_maxAttempt);
         Deserialization::Deserialize(pwdBuffer, m_maxHistorySize);
         Deserialization::Deserialize(pwdBuffer, m_expireTime);
+        Deserialization::Deserialize(pwdBuffer, m_expireTimeLeft);
         Deserialization::Deserialize(pwdBuffer, m_passwordRcvActive);
         Deserialization::Deserialize(pwdBuffer, m_passwordRecovery);
         Deserialization::Deserialize(pwdBuffer, m_passwordActive);
@@ -326,8 +330,9 @@ namespace AuthPasswd
 
         LogSecureDebug("User: " << m_user << ", loaded max_att: " << m_maxAttempt <<
                        ", history_size: " << m_maxHistorySize << ", m_expireTime: " <<
-                       m_expireTime << ", isActive: " << m_passwordActive <<
-                       ", isRcvActive: " << m_passwordRcvActive);
+                       m_expireTime << ", m_expireTimeLeft: " << m_expireTimeLeft <<
+                       ", isActive: " << m_passwordActive << ", isRcvActive: " <<
+                       m_passwordRcvActive);
     }
 
     bool PasswordFile::tryLoadMemoryFromOldFormatFile()
@@ -352,9 +357,9 @@ namespace AuthPasswd
 
             Deserialization::Deserialize(pwdBuffer, m_maxAttempt);
             Deserialization::Deserialize(pwdBuffer, m_maxHistorySize);
-            Deserialization::Deserialize(pwdBuffer, m_expireTime);
-            if (m_expireTime == 0)
-                m_expireTime = PASSWORD_INFINITE_EXPIRATION_TIME;
+            Deserialization::Deserialize(pwdBuffer, m_expireTimeLeft);
+            if (m_expireTimeLeft == 0)
+                m_expireTimeLeft = PASSWORD_INFINITE_EXPIRATION_TIME;
 
             if (remaining == VERSION_2_REMAINING)
                 Deserialization::Deserialize(pwdBuffer, m_passwordActive);
@@ -386,6 +391,7 @@ namespace AuthPasswd
                     );
             }
 
+            m_expireTime = PASSWORD_INFINITE_EXPIRATION_DAYS;
             m_passwordRcvActive = false;
             m_passwordRecovery.reset(new NoPassword());
 
@@ -531,15 +537,25 @@ namespace AuthPasswd
         return ret;
     }
 
-    void PasswordFile::setExpireTime(time_t expireTime)
+    void PasswordFile::setExpireTime(unsigned int expireTime)
     {
         m_expireTime = expireTime;
     }
 
+    unsigned int PasswordFile::getExpireTime() const
+    {
+        return m_expireTime;
+    }
+
+    void PasswordFile::setExpireTimeLeft(time_t expireTimeLeft)
+    {
+        m_expireTimeLeft = expireTimeLeft;
+    }
+
     unsigned int PasswordFile::getExpireTimeLeft() const
     {
-        if(m_expireTime != PASSWORD_INFINITE_EXPIRATION_TIME) {
-            time_t timeLeft = m_expireTime - time(NULL);
+        if(m_expireTimeLeft != PASSWORD_INFINITE_EXPIRATION_TIME) {
+            time_t timeLeft = m_expireTimeLeft - time(NULL);
             return (timeLeft < 0) ? 0 : static_cast<unsigned int>(timeLeft);
         } else
             return PASSWORD_API_NO_EXPIRATION;
@@ -548,7 +564,7 @@ namespace AuthPasswd
     bool PasswordFile::checkExpiration() const
     {
         //return true if expired, else false
-        return ((m_expireTime != PASSWORD_INFINITE_EXPIRATION_TIME) && (time(NULL) > m_expireTime));
+        return ((m_expireTimeLeft != PASSWORD_INFINITE_EXPIRATION_TIME) && (time(NULL) > m_expireTimeLeft));
     }
 
     bool PasswordFile::checkIfAttemptsExceeded() const

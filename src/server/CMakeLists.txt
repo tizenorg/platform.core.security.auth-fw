@@ -29,6 +29,8 @@ SET(SERVER_SOURCES
     ${SERVER_PATH}/service/password-file.cpp
     ${SERVER_PATH}/service/password-manager.cpp
     ${SERVER_PATH}/service/password-file-buffer.cpp
+    ${SERVER_PATH}/service/policy-manager.cpp
+    ${SERVER_PATH}/service/policy-file.cpp
     )
 
 SET_SOURCE_FILES_PROPERTIES(
