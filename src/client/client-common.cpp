@@ -106,7 +106,7 @@ int SockRAII::Connect(char const * const interface) {
         return AUTH_PASSWD_API_ERROR_SOCKET;
     }
 
-    strcpy(clientAddr.sun_path, interface);
+    strncpy(clientAddr.sun_path, interface, sizeof(clientAddr.sun_path) - 1);
 
     LogDebug("ClientAddr.sun_path = " << interface);
 
