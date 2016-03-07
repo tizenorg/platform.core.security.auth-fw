@@ -194,13 +194,14 @@ int PasswordService::processResetFunctions(PasswordHdrs hdr, MessageBuffer& buff
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
 
     std::string newPasswd, emptyStr="";
-    unsigned int passwdType = 0, rec_user = 0;
+    unsigned int passwdType = 0;
+    uid_t rec_user = 0;
 
     switch (hdr) {
         case PasswordHdrs::HDR_RST_PASSWD:
             Deserialization::Deserialize(buffer, passwdType);
-            Deserialization::Deserialize(buffer, newPasswd);
             Deserialization::Deserialize(buffer, rec_user);
+            Deserialization::Deserialize(buffer, newPasswd);
             result = m_pwdManager.resetPassword(passwdType, newPasswd, rec_user);
             break;
 
@@ -214,11 +215,11 @@ int PasswordService::processResetFunctions(PasswordHdrs hdr, MessageBuffer& buff
 int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buffer)
 {
     int result = AUTH_PASSWD_API_ERROR_SERVER_ERROR;
-    int rec_user = 0;
-    auth_password_policy policy;
 
     switch (hdr) {
-        case PasswordHdrs::HDR_SET_PASSWD_POLICY:
+        case PasswordHdrs::HDR_SET_PASSWD_POLICY: {
+            auth_password_policy policy;
+
             Deserialization::Deserialize(buffer, policy.policyFlag);
             Deserialization::Deserialize(buffer, policy.uid);
             Deserialization::Deserialize(buffer, policy.maxAttempts);
@@ -243,8 +244,10 @@ int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buf
                     m_pwdManager.setPasswordHistory(policy.uid, policy.historySize);
             }
             break;
+        }
 
-        case PasswordHdrs::HDR_DIS_PASSWD_POLICY:
+        case PasswordHdrs::HDR_DIS_PASSWD_POLICY: {
+            uid_t rec_user = 0;
             Deserialization::Deserialize(buffer, rec_user);
             result = m_policyManager.disablePolicy(rec_user);
             if (result == AUTH_PASSWD_API_SUCCESS) {
@@ -253,6 +256,7 @@ int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buf
                 m_pwdManager.setPasswordHistory(rec_user, 0);
             }
             break;
+        }
 
         default:
             LogError("Unknown msg header.");
