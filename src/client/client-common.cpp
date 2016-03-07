@@ -117,7 +117,7 @@ int SockRAII::Connect(char const * const interface) {
             return AUTH_PASSWD_API_ERROR_SOCKET;
         }
         int error = 0;
-        size_t len = sizeof(error);
+        socklen_t len = sizeof(error);
         retval = getsockopt(m_sock, SOL_SOCKET, SO_ERROR, &error, &len);
 
         if (-1 == retval) {
