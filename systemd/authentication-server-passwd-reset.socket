@@ -8,7 +8,7 @@ Service=authentication-server.service
 
 [Unit]
 Wants=authentication-server.target
-Before=authetication-server.target
+Before=authentication-server.target
 
 [Install]
 WantedBy=sockets.target
