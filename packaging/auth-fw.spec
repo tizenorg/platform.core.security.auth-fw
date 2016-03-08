@@ -1,5 +1,5 @@
-Name:       authentication-server
-Summary:    Authentication server
+Name:       auth-fw
+Summary:    Authentication framework
 Version:    0.0.1
 Release:    1
 Group:      Security/Service
@@ -17,7 +17,7 @@ BuildRequires: pkgconfig(libtzplatform-config)
 %{?systemd_requires}
 
 %description
-Authentication server with client libraries
+Authentication framework which is consist of client library and server daemon
 
 %global run_dir %{?TZ_SYS_RUN:%TZ_SYS_RUN}%{!?TZ_SYS_RUN:/var/run}
 %global bin_dir %{?TZ_SYS_BIN:%TZ_SYS_BIN}%{!?TZ_SYS_BIN:%_bindir}
@@ -29,33 +29,33 @@ Authentication server with client libraries
 %global sock_passwd_policy %{name}-passwd-policy.socket
 
 %package -n lib%{name}-client
-Summary:    Authentication server (client)
+Summary:    Authentication framework (client)
 Group:      Security/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires(post): %{sbin_dir}/ldconfig
 Requires(postun): %{sbin_dir}/ldconfig
 
 %description -n lib%{name}-client
-Authentication server package (client)
+Authentication framework package (client)
 
 %package -n lib%{name}-client-admin
-Summary:    Authentication server (client-admin)
+Summary:    Authentication framework (client-admin)
 Group:      Security/Libraries
 Requires:   %{name} = %{version}-%{release}
 Requires(post): %{sbin_dir}/ldconfig
 Requires(postun): %{sbin_dir}/ldconfig
 
 %description -n lib%{name}-client-admin
-Authentication server package (client-admin)
+Authentication framework package (client-admin)
 
 %package -n lib%{name}-client-devel
-Summary:    Authentication server (client-devel)
+Summary:    Authentication framework (client-devel)
 Group:      Security/Development
 Requires:   lib%{name}-client = %{version}-%{release}
 Requires:   lib%{name}-client-admin = %{version}-%{release}
 
 %description -n lib%{name}-client-devel
-Authentication server package (client-devel)
+Authentication framework package (client-devel)
 
 %prep
 %setup -q

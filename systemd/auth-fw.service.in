@@ -1,5 +1,5 @@
 [Unit]
-Description=Start authentication server
+Description=Start @SERVICE_NAME@ server
 
 [Service]
 Type=notify
