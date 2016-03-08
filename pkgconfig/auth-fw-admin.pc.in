@@ -4,7 +4,7 @@ libdir=@LIB_INSTALL_DIR@
 includedir=${prefix}/include
 
 Name: @SERVICE_NAME@-admin
-Description: Authentication server admin
+Description: @SERVICE_NAME@ admin client
 Version: @VERSION@
 Requires:
 Libs: -L${libdir} -l@SERVICE_NAME@-client-admin -l@SERVICE_NAME@-commons

@@ -1,7 +1,7 @@
 /*
  *  Authentication password
  *
- *  Copyright (c) 2016 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *  Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Contact: Jooseong Lee <jooseong.lee@samsung.com>
  *
@@ -29,16 +29,16 @@
 /**
  * @file    auth-passwd-admin.h
  * @version 1.0
- * @brief   This file contains APIs of the Authentication Server
+ * @brief   This file contains APIs of the Authentication framework admin
 */
 
 /**
  * @defgroup SecurityFW
  * @{
  *
- * @defgroup AUTH_PASSWD Authentication Server - password
+ * @defgroup AUTH_PASSWD Authentication framework - password
  * @version  1.0
- * @brief    Authentication Server client library functions
+ * @brief    Authentication framework client library functions
  *
 */
 

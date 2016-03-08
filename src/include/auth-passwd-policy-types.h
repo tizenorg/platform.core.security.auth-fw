@@ -1,7 +1,7 @@
 /*
  *  Authentication password
  *
- *  Copyright (c) 2016 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *  Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Contact: Jooseong Lee <jooseong.lee@samsung.com>
  *

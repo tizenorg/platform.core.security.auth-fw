@@ -19,7 +19,7 @@
  * @file        sever-main.cpp
  * @author      Bartlomiej Grzelewski (b.grzelewski@samsung.com)
  * @version     1.0
- * @brief       Implementation of authentication server
+ * @brief       Implementation of auth-fw server main
  */
 #include <stdlib.h>
 #include <signal.h>
