@@ -67,17 +67,17 @@ int auth_passwd_set_history_size(policy_h *p_policy, unsigned int history_size);
 
 int auth_passwd_set_min_length(policy_h *p_policy, unsigned int min_length);
 
-int auth_passwd_set_minComplexCharNumber(policy_h *p_policy, unsigned int minComplexCharNumber);
+int auth_passwd_set_min_complex_char_num(policy_h *p_policy, unsigned int val);
 
-int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, unsigned int maxCharOccurrences);
+int auth_passwd_set_max_char_occurrences(policy_h *p_policy, unsigned int val);
 
-int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, unsigned int maxNumSeqLength);
+int auth_passwd_set_max_num_seq_len(policy_h *p_policy, unsigned int val);
 
 int auth_passwd_set_quality(policy_h *p_policy, password_quality_type quality_type);
 
 int auth_passwd_set_pattern(policy_h *p_policy, const char *pattern);
 
-int auth_passwd_set_forbiddenPasswd(policy_h *p_policy, const char *forbiddenPasswd);
+int auth_passwd_set_forbidden_passwd(policy_h *p_policy, const char *forbidden_passwd);
 
 int auth_passwd_set_policy(policy_h *p_policy);
 

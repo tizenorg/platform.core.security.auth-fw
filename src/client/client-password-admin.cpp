@@ -153,35 +153,35 @@ int auth_passwd_set_min_length(policy_h *p_policy, unsigned int min_length)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_minComplexCharNumber(policy_h *p_policy, unsigned int minComplexCharNumber)
+int auth_passwd_set_min_complex_char_num(policy_h *p_policy, unsigned int val)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
     p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MIN_COMPLEX_CHAR_NUMBER);
-    p_policy->minComplexCharNumber = minComplexCharNumber;
+    p_policy->minComplexCharNumber = val;
     return AUTH_PASSWD_API_SUCCESS;
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_maxCharOccurrences(policy_h *p_policy, unsigned int maxCharOccurrences)
+int auth_passwd_set_max_char_occurrences(policy_h *p_policy, unsigned int val)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
     p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MAX_CHAR_OCCURRENCES);
-    p_policy->maxCharOccurrences = maxCharOccurrences;
+    p_policy->maxCharOccurrences = val;
     return AUTH_PASSWD_API_SUCCESS;
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_maxNumSeqLength(policy_h *p_policy, unsigned int maxNumSeqLength)
+int auth_passwd_set_max_num_seq_len(policy_h *p_policy, unsigned int val)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
     p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_MAX_NUMERIC_SEQ_LENGTH);
-    p_policy->maxNumSeqLength = maxNumSeqLength;
+    p_policy->maxNumSeqLength = val;
     return AUTH_PASSWD_API_SUCCESS;
 }
 
@@ -212,16 +212,16 @@ int auth_passwd_set_pattern(policy_h *p_policy, const char *pattern)
 }
 
 AUTH_PASSWD_API
-int auth_passwd_set_forbiddenPasswd(policy_h *p_policy, const char *forbiddenPasswd)
+int auth_passwd_set_forbidden_passwd(policy_h *p_policy, const char *forbidden_passwd)
 {
     if (!p_policy)
         return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
 
-    if (!forbiddenPasswd)
-        forbiddenPasswd = AuthPasswd::NO_FORBIDDEND_PASSWORD;
+    if (!forbidden_passwd)
+        forbidden_passwd = AuthPasswd::NO_FORBIDDEND_PASSWORD;
 
     p_policy->policyFlag = p_policy->policyFlag | (1 << POLICY_FORBIDDEN_PASSWDS);
-    p_policy->forbiddenPasswds.push_back(forbiddenPasswd);
+    p_policy->forbiddenPasswds.push_back(forbidden_passwd);
     return AUTH_PASSWD_API_SUCCESS;
 }
 
