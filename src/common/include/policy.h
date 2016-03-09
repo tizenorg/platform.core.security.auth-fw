@@ -26,7 +26,7 @@
 #define _AUTH_PASSWD_POLICY_H_
 
 #include <unistd.h>
-#include <vector>
+#include <set>
 #include <string>
 #include <auth-passwd-policy-types.h>
 #include <dpl/serialization.h>
@@ -93,7 +93,7 @@ struct Policy {
     std::string pattern;
 
     // forbidden strings in password
-    std::vector<std::string> forbiddenPasswds;
+    std::set<std::string> forbiddenPasswds;
 };
 
 struct PolicySerializable : public Policy, ISerializable {

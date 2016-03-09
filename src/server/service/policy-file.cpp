@@ -24,7 +24,6 @@
 #include <policy-file.h>
 
 #include <fstream>
-#include <algorithm>
 #include <regex.h>
 
 #include <fcntl.h>
@@ -371,27 +370,14 @@ namespace AuthPasswd
     // policy forbiddenPasswds
     bool PolicyFile::checkForbiddenPasswds(const std::string &password) const
     {
-        if (password.empty())
-            return true;
-
-        return (std::find(m_policy.forbiddenPasswds.begin(), m_policy.forbiddenPasswds.end(), password)
-            == m_policy.forbiddenPasswds.end());
+        return password.empty() || m_policy.forbiddenPasswds.count(password) == 0;
     }
 
-    void PolicyFile::setForbiddenPasswds(std::vector<std::string> forbiddenPasswds)
+    void PolicyFile::setForbiddenPasswds(std::set<std::string> forbiddenPasswds)
     {
-        for (std::vector<std::string>::iterator it = forbiddenPasswds.begin() ;
-             it != forbiddenPasswds.end() ; ++it) {
-
-             std::string forbiddenPasswd = *it;
-             LogError("forbiddenPasswd : " << forbiddenPasswd);
-
-             if (forbiddenPasswd.empty())
-                 m_policy.forbiddenPasswds.clear();
-             else
-                 if (std::find(m_policy.forbiddenPasswds.begin(), m_policy.forbiddenPasswds.end(), forbiddenPasswd)
-                     == m_policy.forbiddenPasswds.end())
-                     m_policy.forbiddenPasswds.push_back(forbiddenPasswd);
+        for (auto &passwd : forbiddenPasswds) {
+            if (!passwd.empty())
+                m_policy.forbiddenPasswds.insert(passwd);
         }
     }
 } //namespace AuthPasswd

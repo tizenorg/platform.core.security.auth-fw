@@ -240,7 +240,7 @@ int auth_passwd_set_forbidden_passwd(policy_h *p_policy, const char *forbidden_p
 
     auto policy = reinterpret_cast<AuthPasswd::Policy *>(p_policy);
     policy->setFlag(POLICY_FORBIDDEN_PASSWDS);
-    policy->forbiddenPasswds.push_back(forbidden_passwd);
+    policy->forbiddenPasswds.insert(forbidden_passwd);
 
     return AUTH_PASSWD_API_SUCCESS;
 }

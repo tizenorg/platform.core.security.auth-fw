@@ -25,9 +25,7 @@
 #define _PILICY_FILE_H_
 
 #include <string>
-#include <vector>
-#include <list>
-#include <memory>
+#include <set>
 
 #include <policy.h>
 
@@ -65,7 +63,7 @@ namespace AuthPasswd
         void setPattern(const std::string &pattern);
 
         bool checkForbiddenPasswds(const std::string &password) const;
-        void setForbiddenPasswds(std::vector<std::string> forbiddenPasswds);
+        void setForbiddenPasswds(std::set<std::string> forbiddenPasswds);
 
     private:
         void loadMemoryFromFile();
