@@ -42,4 +42,12 @@ const std::string REGEX_QUALITY_NUMERIC = "^[0-9]+$";
 const std::string REGEX_QUALITY_ALPHABETIC = "^[A-Za-z]+$";
 const std::string REGEX_QUALITY_ALPHANUMERIC = "^[A-Za-z0-9]+$";
 
+Policy::Policy() : flag(0)
+{
+}
+
+Policy::~Policy()
+{
+}
+
 } // namespace AuthPasswd

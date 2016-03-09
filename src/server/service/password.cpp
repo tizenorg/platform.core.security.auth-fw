@@ -218,9 +218,9 @@ int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buf
 
     switch (hdr) {
         case PasswordHdrs::HDR_SET_PASSWD_POLICY: {
-            auth_password_policy policy;
+            Policy policy;
 
-            Deserialization::Deserialize(buffer, policy.policyFlag);
+            Deserialization::Deserialize(buffer, policy.flag);
             Deserialization::Deserialize(buffer, policy.uid);
             Deserialization::Deserialize(buffer, policy.maxAttempts);
             Deserialization::Deserialize(buffer, policy.validPeriod);
@@ -236,11 +236,11 @@ int PasswordService::processPolicyFunctions(PasswordHdrs hdr, MessageBuffer& buf
             result = m_policyManager.setPolicy(policy);
 
             if (result == AUTH_PASSWD_API_SUCCESS) {
-                if (policy.policyFlag & (1 << POLICY_MAX_ATTEMPTS))
+                if (policy.isFlagOn(POLICY_MAX_ATTEMPTS))
                     m_pwdManager.setPasswordMaxAttempts(policy.uid, policy.maxAttempts);
-                if (policy.policyFlag & (1 << POLICY_VALID_PERIOD))
+                if (policy.isFlagOn(POLICY_VALID_PERIOD))
                     m_pwdManager.setPasswordValidity(policy.uid, policy.validPeriod);
-                if (policy.policyFlag & (1 << POLICY_HISTORY_SIZE))
+                if (policy.isFlagOn(POLICY_HISTORY_SIZE))
                     m_pwdManager.setPasswordHistory(policy.uid, policy.historySize);
             }
             break;
