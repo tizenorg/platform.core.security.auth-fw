@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-typedef struct auth_password_policy policy_h;
+struct policy_h;
 
 typedef enum {
     POLICY_USER,

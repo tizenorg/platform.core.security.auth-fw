@@ -30,9 +30,41 @@
 #include <string>
 #include <auth-passwd-policy-types.h>
 
-struct auth_password_policy {
+namespace AuthPasswd {
 
-    int policyFlag;
+extern const size_t MAX_PASSWORD_LEN;
+extern const unsigned int MAX_PASSWORD_HISTORY;
+extern const unsigned int MAX_PASSWORD_ATTEMPTS;
+extern const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS;
+extern const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT;
+extern const unsigned int PASSWORD_API_NO_EXPIRATION;
+
+extern const char* NO_PASSWORD;
+extern const char* NO_PATTERN;
+extern const char* NO_FORBIDDEND_PASSWORD;
+
+extern const std::string REGEX_QUALITY_UNSPECIFIED;
+extern const std::string REGEX_QUALITY_SOMETHING;
+extern const std::string REGEX_QUALITY_NUMERIC;
+extern const std::string REGEX_QUALITY_ALPHABETIC;
+extern const std::string REGEX_QUALITY_ALPHANUMERIC;
+
+struct Policy {
+    Policy();
+    ~Policy();
+
+    inline void setFlag(password_policy_type field)
+    {
+        flag |= (1 << field);
+    }
+
+    inline bool isFlagOn(password_policy_type field)
+    {
+        return (flag & (1 << field)) ? true : false;
+    }
+
+    // XOR-ed value of password_policy_type enum
+    int flag;
 
     uid_t uid;
 
@@ -60,25 +92,6 @@ struct auth_password_policy {
     // forbidden strings in password
     std::vector<std::string> forbiddenPasswds;
 };
-
-namespace AuthPasswd {
-
-extern const size_t MAX_PASSWORD_LEN;
-extern const unsigned int MAX_PASSWORD_HISTORY;
-extern const unsigned int MAX_PASSWORD_ATTEMPTS;
-extern const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS;
-extern const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT;
-extern const unsigned int PASSWORD_API_NO_EXPIRATION;
-
-extern const char* NO_PASSWORD;
-extern const char* NO_PATTERN;
-extern const char* NO_FORBIDDEND_PASSWORD;
-
-extern const std::string REGEX_QUALITY_UNSPECIFIED;
-extern const std::string REGEX_QUALITY_SOMETHING;
-extern const std::string REGEX_QUALITY_NUMERIC;
-extern const std::string REGEX_QUALITY_ALPHABETIC;
-extern const std::string REGEX_QUALITY_ALPHANUMERIC;
 
 }
 

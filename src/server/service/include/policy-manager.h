@@ -46,7 +46,7 @@ namespace AuthPasswd
                         unsigned int user);
 
         // policy setting functions
-        int setPolicy(auth_password_policy policy);
+        int setPolicy(Policy policy);
 
         // policy disabling functions
         int disablePolicy(unsigned int user);

@@ -112,7 +112,7 @@ namespace AuthPasswd
         return AUTH_PASSWD_API_SUCCESS;
     }
 
-    int PolicyManager::setPolicy(auth_password_policy policy)
+    int PolicyManager::setPolicy(Policy policy)
     {
         LogSecureDebug("Inside setPolicy function.");
 
@@ -121,136 +121,139 @@ namespace AuthPasswd
 
         // check if policies are correct
         for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST+1 ; i++) {
-            if (policy.policyFlag & (1 << i)) {
-                switch (i) {
-                    case POLICY_MAX_ATTEMPTS:
-                        break;
+            if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
+                continue;
 
-                    case POLICY_VALID_PERIOD: {
-                        time_t curTime = time(NULL);
-                        if (policy.validPeriod > ((UINT_MAX - curTime) / 86400)) {
-                           LogError("Incorrect input param.");
-                           return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
+            switch (i) {
+                case POLICY_MAX_ATTEMPTS:
+                    break;
+
+                case POLICY_VALID_PERIOD: {
+                    time_t curTime = time(NULL);
+                    if (policy.validPeriod > ((UINT_MAX - curTime) / 86400)) {
+                       LogError("Incorrect input param.");
+                       return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
                     }
-
-                    case POLICY_HISTORY_SIZE:
-                        if (policy.historySize > MAX_PASSWORD_HISTORY) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_MIN_LENGTH:
-                        if (policy.minLength > MAX_PASSWORD_LEN) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_MIN_COMPLEX_CHAR_NUMBER:
-                        if (policy.minComplexCharNumber > MAX_PASSWORD_LEN) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_MAX_CHAR_OCCURRENCES:
-                        if (policy.maxCharOccurrences > MAX_PASSWORD_LEN) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_MAX_NUMERIC_SEQ_LENGTH:
-                        if (policy.maxNumSeqLength > MAX_PASSWORD_LEN) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_QUALITY_TYPE:
-                        if (policy.qualityType > AUTH_PWD_QUALITY_LAST) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_PATTERN:
-                        if (!itPolicy->second.isValidPattern(policy.pattern)) {
-                            LogError("Incorrect input param.");
-                            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                        }
-                        break;
-
-                    case POLICY_FORBIDDEN_PASSWDS:
-                        break;
-
-                    default:
-                        LogError("Not supported policy type.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    break;
                 }
+
+                case POLICY_HISTORY_SIZE:
+                    if (policy.historySize > MAX_PASSWORD_HISTORY) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_MIN_LENGTH:
+                    if (policy.minLength > MAX_PASSWORD_LEN) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_MIN_COMPLEX_CHAR_NUMBER:
+                    if (policy.minComplexCharNumber > MAX_PASSWORD_LEN) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_MAX_CHAR_OCCURRENCES:
+                    if (policy.maxCharOccurrences > MAX_PASSWORD_LEN) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_MAX_NUMERIC_SEQ_LENGTH:
+                    if (policy.maxNumSeqLength > MAX_PASSWORD_LEN) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_QUALITY_TYPE:
+                    if (policy.qualityType > AUTH_PWD_QUALITY_LAST) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_PATTERN:
+                    if (!itPolicy->second.isValidPattern(policy.pattern)) {
+                        LogError("Incorrect input param.");
+                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+                    }
+                    break;
+
+                case POLICY_FORBIDDEN_PASSWDS:
+                    break;
+
+                default:
+                    LogError("Not supported policy type.");
+                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
             }
         }
 
         // update policies
         for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST+1 ; i++) {
-            if (policy.policyFlag & (1 << i)) {
-                switch (i) {
-                    case POLICY_MAX_ATTEMPTS:
-                        LogSecureDebug("maxAttempts: " << policy.maxAttempts);
-                        break;
+            if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
+                continue;
 
-                    case POLICY_VALID_PERIOD:
-                        LogSecureDebug("validPeriod: " << policy.validPeriod);
-                        break;
+            switch (i) {
+                case POLICY_MAX_ATTEMPTS:
+                    LogSecureDebug("maxAttempts: " << policy.maxAttempts);
+                    break;
 
-                    case POLICY_HISTORY_SIZE:
-                        LogSecureDebug("historySize: " << policy.historySize);
-                        break;
+                case POLICY_VALID_PERIOD:
+                    LogSecureDebug("validPeriod: " << policy.validPeriod);
+                    break;
 
-                    case POLICY_MIN_LENGTH:
-                        LogSecureDebug("minLength: " << policy.minLength);
-                        itPolicy->second.setMinLength(policy.minLength);
-                        break;
+                case POLICY_HISTORY_SIZE:
+                    LogSecureDebug("historySize: " << policy.historySize);
+                    break;
 
-                    case POLICY_MIN_COMPLEX_CHAR_NUMBER:
-                        LogSecureDebug("minComplexCharNumber: " << policy.minComplexCharNumber);
-                        itPolicy->second.setMinComplexCharNumber(policy.minComplexCharNumber);
-                        break;
+                case POLICY_MIN_LENGTH:
+                    LogSecureDebug("minLength: " << policy.minLength);
+                    itPolicy->second.setMinLength(policy.minLength);
+                    break;
 
-                    case POLICY_MAX_CHAR_OCCURRENCES:
-                        LogSecureDebug("maxCharOccurrences: " << policy.maxCharOccurrences);
-                        itPolicy->second.setMaxCharOccurrences(policy.maxCharOccurrences);
-                        break;
+                case POLICY_MIN_COMPLEX_CHAR_NUMBER:
+                    LogSecureDebug("minComplexCharNumber: " << policy.minComplexCharNumber);
+                    itPolicy->second.setMinComplexCharNumber(policy.minComplexCharNumber);
+                    break;
 
-                    case POLICY_MAX_NUMERIC_SEQ_LENGTH:
-                        LogSecureDebug("maxNumSeqLength: " << policy.maxNumSeqLength);
-                        itPolicy->second.setMaxNumSeqLength(policy.maxNumSeqLength);
-                        break;
+                case POLICY_MAX_CHAR_OCCURRENCES:
+                    LogSecureDebug("maxCharOccurrences: " << policy.maxCharOccurrences);
+                    itPolicy->second.setMaxCharOccurrences(policy.maxCharOccurrences);
+                    break;
 
-                    case POLICY_QUALITY_TYPE:
-                        LogSecureDebug("qualityType: " << policy.qualityType);
-                        itPolicy->second.setQualityType(policy.qualityType);
-                        break;
+                case POLICY_MAX_NUMERIC_SEQ_LENGTH:
+                    LogSecureDebug("maxNumSeqLength: " << policy.maxNumSeqLength);
+                    itPolicy->second.setMaxNumSeqLength(policy.maxNumSeqLength);
+                    break;
 
-                    case POLICY_PATTERN:
-                        LogSecureDebug("pattern: " << policy.pattern);
-                        itPolicy->second.setPattern(policy.pattern);
-                        break;
+                case POLICY_QUALITY_TYPE:
+                    LogSecureDebug("qualityType: " << policy.qualityType);
+                    itPolicy->second.setQualityType(policy.qualityType);
+                    break;
 
-                    case POLICY_FORBIDDEN_PASSWDS:
-                        LogSecureDebug("forbiddenPasswds number: " << policy.forbiddenPasswds.size());
-                        itPolicy->second.setForbiddenPasswds(policy.forbiddenPasswds);
-                        break;
+                case POLICY_PATTERN:
+                    LogSecureDebug("pattern: " << policy.pattern);
+                    itPolicy->second.setPattern(policy.pattern);
+                    break;
 
-                    default:
-                        LogError("Not supported policy type.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                }
+                case POLICY_FORBIDDEN_PASSWDS:
+                    LogSecureDebug("forbiddenPasswds number: " << policy.forbiddenPasswds.size());
+                    itPolicy->second.setForbiddenPasswds(policy.forbiddenPasswds);
+                    break;
+
+                default:
+                    LogError("Not supported policy type.");
+                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
             }
         }
+
         itPolicy->second.enable();
         itPolicy->second.writeMemoryToFile();
 
