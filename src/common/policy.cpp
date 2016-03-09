@@ -23,6 +23,7 @@
  */
 
 #include <policy.h>
+#include <sstream>
 
 namespace AuthPasswd {
 
@@ -42,12 +43,81 @@ const std::string REGEX_QUALITY_NUMERIC = "^[0-9]+$";
 const std::string REGEX_QUALITY_ALPHABETIC = "^[A-Za-z]+$";
 const std::string REGEX_QUALITY_ALPHANUMERIC = "^[A-Za-z0-9]+$";
 
-Policy::Policy() : flag(0)
+Policy::Policy() :
+    flag(0),
+    uid(0),
+    maxAttempts(0),
+    validPeriod(0),
+    historySize(0),
+    minLength(0),
+    minComplexCharNumber(0),
+    maxCharOccurrences(0),
+    maxNumSeqLength(0),
+    qualityType(AUTH_PWD_QUALITY_UNSPECIFIED),
+    pattern(NO_PATTERN)
 {
 }
 
 Policy::~Policy()
 {
+}
+
+std::string Policy::info() const
+{
+    std::stringstream ss;
+    ss << "Uid: " << uid;
+    ss << " flag: " << flag;
+    ss << " maxAttempts: " << maxAttempts;
+    ss << " validPeriod: " << validPeriod;
+    ss << " historySize: " << historySize;
+    ss << " minLength: " << minLength;
+    ss << " minComplexCharNumber: " << minComplexCharNumber;
+    ss << " maxCharOccurrences: " << maxCharOccurrences;
+    ss << " maxNumSeqLength: " << maxNumSeqLength;
+    ss << " qualityType: " << qualityType;
+    ss << " pattern: " << pattern;
+    ss << " forbiddenPasswd size: " << forbiddenPasswds.size();
+    ss << " forbiddenPasswd items:";
+    for (auto &item : forbiddenPasswds)
+        ss << " " << item;
+
+    return ss.str();
+}
+
+PolicySerializable::PolicySerializable(const Policy &policy) : Policy(policy)
+{
+}
+
+PolicySerializable::PolicySerializable(IStream &stream)
+{
+    Deserialization::Deserialize(stream, flag);
+    Deserialization::Deserialize(stream, uid);
+    Deserialization::Deserialize(stream, maxAttempts);
+    Deserialization::Deserialize(stream, validPeriod);
+    Deserialization::Deserialize(stream, historySize);
+    Deserialization::Deserialize(stream, minLength);
+    Deserialization::Deserialize(stream, minComplexCharNumber);
+    Deserialization::Deserialize(stream, maxCharOccurrences);
+    Deserialization::Deserialize(stream, maxNumSeqLength);
+    Deserialization::Deserialize(stream, qualityType);
+    Deserialization::Deserialize(stream, pattern);
+    Deserialization::Deserialize(stream, forbiddenPasswds);
+}
+
+void PolicySerializable::Serialize(IStream &stream) const
+{
+    Serialization::Serialize(stream, flag);
+    Serialization::Serialize(stream, uid);
+    Serialization::Serialize(stream, maxAttempts);
+    Serialization::Serialize(stream, validPeriod);
+    Serialization::Serialize(stream, historySize);
+    Serialization::Serialize(stream, minLength);
+    Serialization::Serialize(stream, minComplexCharNumber);
+    Serialization::Serialize(stream, maxCharOccurrences);
+    Serialization::Serialize(stream, maxNumSeqLength);
+    Serialization::Serialize(stream, qualityType);
+    Serialization::Serialize(stream, pattern);
+    Serialization::Serialize(stream, forbiddenPasswds);
 }
 
 } // namespace AuthPasswd

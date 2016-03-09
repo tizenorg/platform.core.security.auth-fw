@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include <auth-passwd-policy-types.h>
+#include <dpl/serialization.h>
 
 namespace AuthPasswd {
 
@@ -52,6 +53,8 @@ extern const std::string REGEX_QUALITY_ALPHANUMERIC;
 struct Policy {
     Policy();
     ~Policy();
+
+    std::string info(void) const;
 
     inline void setFlag(password_policy_type field)
     {
@@ -91,6 +94,12 @@ struct Policy {
 
     // forbidden strings in password
     std::vector<std::string> forbiddenPasswds;
+};
+
+struct PolicySerializable : public Policy, ISerializable {
+    explicit PolicySerializable(const Policy &);
+    explicit PolicySerializable(IStream &);
+    void Serialize(IStream &) const;
 };
 
 }

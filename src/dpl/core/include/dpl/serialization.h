@@ -24,28 +24,27 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <list>
 #include <map>
 #include <memory>
 
 namespace AuthPasswd {
 // Abstract data stream buffer
-class IStream
-{
-  public:
+class IStream {
+public:
     virtual void Read(size_t num, void * bytes) = 0;
     virtual void Write(size_t num, const void * bytes) = 0;
     virtual ~IStream(){}
 };
 
 // Serializable interface
-class ISerializable
-{
-  public:
-    /*    ISerializable(){};
-     *    ISerializable(IStream&){}; */
+class ISerializable {
+public:
+    ISerializable() {}
+    ISerializable(IStream&) {}
     virtual void Serialize(IStream &) const = 0;
-    virtual ~ISerializable(){}
+    virtual ~ISerializable() {}
 };
 
 struct Serialization {
@@ -172,6 +171,17 @@ struct Serialization {
     static void Serialize(IStream& stream, const std::vector<T>* const vec)
     {
         Serialize(stream, *vec);
+    }
+
+    // std::set
+    template <typename T>
+    static void Serialize(IStream& stream, const std::set<T>& set)
+    {
+        size_t length = set.size();
+        stream.Write(sizeof(length), &length);
+        for (const auto &item : set) {
+            Serialize(stream, item);
+        }
     }
 
     // std::pair
@@ -363,6 +373,19 @@ struct Deserialization {
     {
         vec = new std::vector<T>;
         Deserialize(stream, *vec);
+    }
+
+    // std::set
+    template <typename T>
+    static void Deserialize(IStream& stream, std::set<T>& set)
+    {
+        size_t length;
+        stream.Read(sizeof(length), &length);
+        for (size_t i = 0; i < length; ++i) {
+            T obj;
+            Deserialize(stream, obj);
+            set.insert(std::move(obj));
+        }
     }
 
     // std::pair

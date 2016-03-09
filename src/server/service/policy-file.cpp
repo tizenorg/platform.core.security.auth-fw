@@ -34,12 +34,12 @@
 
 #include <dpl/log/log.h>
 #include <dpl/fstream_accessors.h>
+#include <dpl/serialization.h>
 
 #include <auth-passwd-policy-types.h>
 #include <auth-passwd-error.h>
 
 #include <error-description.h>
-#include <policy.h>
 #include <password-exception.h>
 #include <password-file-buffer.h>
 
@@ -51,14 +51,7 @@ namespace {
 
 namespace AuthPasswd
 {
-    PolicyFile::PolicyFile(unsigned int user): m_user(user),
-                                m_enable(false),
-                                m_minLength(0),
-                                m_minComplexCharNumber(0),
-                                m_maxCharOccurrences(0),
-                                m_maxNumSeqLength(0),
-                                m_qualityType(AUTH_PWD_QUALITY_UNSPECIFIED),
-                                m_pattern(NO_PATTERN)
+    PolicyFile::PolicyFile(unsigned int user): m_user(user), m_enable(false)
     {
         // check if data directory exists
         // if not create it
@@ -84,13 +77,7 @@ namespace AuthPasswd
     void PolicyFile::resetState()
     {
         m_enable = false;
-        m_minLength = 0;
-        m_minComplexCharNumber = 0;
-        m_maxCharOccurrences = 0;
-        m_maxNumSeqLength = 0;
-        m_qualityType = AUTH_PWD_QUALITY_UNSPECIFIED;
-        m_pattern = NO_PATTERN;
-        m_forbiddenPasswds.clear();
+        m_policy = Policy();
     }
 
     void PolicyFile::preparePolicyFile()
@@ -139,24 +126,14 @@ namespace AuthPasswd
     {
         PasswordFileBuffer policyBuffer;
 
-        LogSecureDebug("User: " << m_user << ", m_minLength: " << m_minLength <<
-                       ", m_minComplexCharNumber: " << m_minComplexCharNumber <<
-                       ", m_maxCharOccurrences: " << m_maxCharOccurrences <<
-                       ", m_maxNumSeqLength: " << m_maxNumSeqLength <<
-                       ", m_qualityType: " << m_qualityType <<
-                       ", m_pattern: " << m_pattern <<
-                       ", m_forbiddenPasswds.size: " << m_forbiddenPasswds.size());
+        LogSecureDebug("User: " << m_user << "Policy: " << m_policy.info());
 
         // serialize policy attributes
         Serialization::Serialize(policyBuffer, CURRENT_FILE_VERSION);
         Serialization::Serialize(policyBuffer, m_enable);
-        Serialization::Serialize(policyBuffer, m_minLength);
-        Serialization::Serialize(policyBuffer, m_minComplexCharNumber);
-        Serialization::Serialize(policyBuffer, m_maxCharOccurrences);
-        Serialization::Serialize(policyBuffer, m_maxNumSeqLength);
-        Serialization::Serialize(policyBuffer, m_qualityType);
-        Serialization::Serialize(policyBuffer, m_pattern);
-        Serialization::Serialize(policyBuffer, m_forbiddenPasswds);
+
+        PolicySerializable policys(m_policy);
+        policys.Serialize(policyBuffer);
 
         std::string policyFile = createDir(RW_DATA_DIR, m_user) + POLICY_FILE;
         policyBuffer.Save(policyFile);
@@ -181,21 +158,10 @@ namespace AuthPasswd
             Throw(PasswordException::FStreamReadError);
 
         Deserialization::Deserialize(policyBuffer, m_enable);
-        Deserialization::Deserialize(policyBuffer, m_minLength);
-        Deserialization::Deserialize(policyBuffer, m_minComplexCharNumber);
-        Deserialization::Deserialize(policyBuffer, m_maxCharOccurrences);
-        Deserialization::Deserialize(policyBuffer, m_maxNumSeqLength);
-        Deserialization::Deserialize(policyBuffer, m_qualityType);
-        Deserialization::Deserialize(policyBuffer, m_pattern);
-        Deserialization::Deserialize(policyBuffer, m_forbiddenPasswds);
+        PolicySerializable policys(policyBuffer);
+        m_policy = *(dynamic_cast<Policy *>(&policys));
 
-        LogSecureDebug("User: " << m_user << ", m_minLength: " << m_minLength <<
-                       ", m_minComplexCharNumber: " << m_minComplexCharNumber <<
-                       ", m_maxCharOccurrences: " << m_maxCharOccurrences <<
-                       ", m_maxNumSeqLength: " << m_maxNumSeqLength <<
-                       ", m_qualityType: " << m_qualityType <<
-                       ", m_pattern: " << m_pattern <<
-                       ", m_forbiddenPasswds.size: " << m_forbiddenPasswds.size());
+        LogSecureDebug("User: " << m_user << "Policy: " << m_policy.info());
     }
 
     void PolicyFile::enable()
@@ -217,12 +183,12 @@ namespace AuthPasswd
     // policy minLength
     bool PolicyFile::checkMinLength(const std::string &password) const
     {
-        return (password.size() >= m_minLength);
+        return (password.size() >= m_policy.minLength);
     }
 
     void PolicyFile::setMinLength(unsigned int minLength)
     {
-        m_minLength = minLength;
+        m_policy.minLength = minLength;
     }
 
     // policy minComplexCharNumber
@@ -231,7 +197,7 @@ namespace AuthPasswd
         unsigned int i = 0, cnt = 0;
         char ch;
 
-        if (m_minComplexCharNumber == 0)
+        if (m_policy.minComplexCharNumber == 0)
             return true;
 
         for (i = 0; i < password.size(); i++) {
@@ -239,12 +205,12 @@ namespace AuthPasswd
             if( ch < 'A' || ( 'Z' < ch && ch < 'a')  || 'z' < ch)
                 cnt++;
         }
-        return (cnt >= m_minComplexCharNumber);
+        return (cnt >= m_policy.minComplexCharNumber);
     }
 
     void PolicyFile::setMinComplexCharNumber(unsigned int minComplexCharNumber)
     {
-        m_minComplexCharNumber = minComplexCharNumber;
+        m_policy.minComplexCharNumber = minComplexCharNumber;
     }
 
     // policy maxCharOccurrences
@@ -254,7 +220,7 @@ namespace AuthPasswd
         unsigned char ch;
         char occurrence[256]= {0, };
 
-        if (m_maxCharOccurrences == 0)
+        if (m_policy.maxCharOccurrences == 0)
             return true;
 
         for (i = 0; i < password.size(); i++) {
@@ -263,7 +229,7 @@ namespace AuthPasswd
         }
 
         for (i = 0; i<256; i++) {
-            if(occurrence[i] > m_maxCharOccurrences)
+            if(occurrence[i] > m_policy.maxCharOccurrences)
                 return false;
         }
         return true;
@@ -271,7 +237,7 @@ namespace AuthPasswd
 
     void PolicyFile::setMaxCharOccurrences(unsigned int maxCharOccurrences)
     {
-        m_maxCharOccurrences = maxCharOccurrences;
+        m_policy.maxCharOccurrences = maxCharOccurrences;
     }
 
     // policy maxNumSeqLength
@@ -282,7 +248,7 @@ namespace AuthPasswd
         unsigned int len = password.size();
         int order = -2; // -2: not set, -1 : decreasing, 0 : same, +1: increasing
 
-        if (m_maxNumSeqLength == 0)
+        if (m_policy.maxNumSeqLength == 0)
             return true;
 
         for (i = 0; i < len; i++) {
@@ -326,12 +292,12 @@ namespace AuthPasswd
                 prev_num = 0;
             }
         }
-        return max_num_seq_len <= m_maxNumSeqLength;
+        return max_num_seq_len <= m_policy.maxNumSeqLength;
     }
 
     void PolicyFile::setMaxNumSeqLength(unsigned int maxNumSeqLength)
     {
-        m_maxNumSeqLength = maxNumSeqLength;
+        m_policy.maxNumSeqLength = maxNumSeqLength;
     }
 
     // policy qalityType
@@ -339,7 +305,7 @@ namespace AuthPasswd
     {
         std::string pattern;
 
-        switch (m_qualityType) {
+        switch (m_policy.qualityType) {
             case AUTH_PWD_QUALITY_UNSPECIFIED:
                 pattern = REGEX_QUALITY_UNSPECIFIED;
                 break;
@@ -372,7 +338,7 @@ namespace AuthPasswd
 
     void PolicyFile::setQualityType(unsigned int qualityType)
     {
-        m_qualityType = qualityType;
+        m_policy.qualityType = qualityType;
     }
 
     // policy pattern
@@ -387,11 +353,11 @@ namespace AuthPasswd
 
     bool PolicyFile::checkPattern(const std::string &password) const
     {
-        if (m_pattern.empty())
+        if (m_policy.pattern.empty())
             return true;
 
         regex_t re;
-        if (regcomp(&re, m_pattern.c_str(), REG_EXTENDED|REG_NEWLINE) != 0)
+        if (regcomp(&re, m_policy.pattern.c_str(), REG_EXTENDED|REG_NEWLINE) != 0)
             return false;
 
         return (regexec(&re, password.c_str(), 0, NULL, 0) == 0);
@@ -399,7 +365,7 @@ namespace AuthPasswd
 
     void PolicyFile::setPattern(const std::string &pattern)
     {
-        m_pattern = pattern;
+        m_policy.pattern = pattern;
     }
 
     // policy forbiddenPasswds
@@ -408,8 +374,8 @@ namespace AuthPasswd
         if (password.empty())
             return true;
 
-        return (std::find(m_forbiddenPasswds.begin(), m_forbiddenPasswds.end(), password)
-            == m_forbiddenPasswds.end());
+        return (std::find(m_policy.forbiddenPasswds.begin(), m_policy.forbiddenPasswds.end(), password)
+            == m_policy.forbiddenPasswds.end());
     }
 
     void PolicyFile::setForbiddenPasswds(std::vector<std::string> forbiddenPasswds)
@@ -421,11 +387,11 @@ namespace AuthPasswd
              LogError("forbiddenPasswd : " << forbiddenPasswd);
 
              if (forbiddenPasswd.empty())
-                 m_forbiddenPasswds.clear();
+                 m_policy.forbiddenPasswds.clear();
              else
-                 if (std::find(m_forbiddenPasswds.begin(), m_forbiddenPasswds.end(), forbiddenPasswd)
-                     == m_forbiddenPasswds.end())
-                     m_forbiddenPasswds.push_back(forbiddenPasswd);
+                 if (std::find(m_policy.forbiddenPasswds.begin(), m_policy.forbiddenPasswds.end(), forbiddenPasswd)
+                     == m_policy.forbiddenPasswds.end())
+                     m_policy.forbiddenPasswds.push_back(forbiddenPasswd);
         }
     }
 } //namespace AuthPasswd

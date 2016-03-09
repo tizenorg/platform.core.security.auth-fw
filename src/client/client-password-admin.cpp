@@ -264,18 +264,9 @@ int auth_passwd_set_policy(policy_h *p_policy)
         MessageBuffer send, recv;
 
         Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD_POLICY));
-        Serialization::Serialize(send, policy->flag);
-        Serialization::Serialize(send, policy->uid);
-        Serialization::Serialize(send, policy->maxAttempts);
-        Serialization::Serialize(send, policy->validPeriod);
-        Serialization::Serialize(send, policy->historySize);
-        Serialization::Serialize(send, policy->minLength);
-        Serialization::Serialize(send, policy->minComplexCharNumber);
-        Serialization::Serialize(send, policy->maxCharOccurrences);
-        Serialization::Serialize(send, policy->maxNumSeqLength);
-        Serialization::Serialize(send, policy->qualityType);
-        Serialization::Serialize(send, policy->pattern);
-        Serialization::Serialize(send, policy->forbiddenPasswds);
+
+        PolicySerializable policys(*policy);
+        policys.Serialize(send);
 
         int retCode = sendToServer(SERVICE_SOCKET_PASSWD_POLICY, send.Pop(), recv);
         if (AUTH_PASSWD_API_SUCCESS != retCode) {

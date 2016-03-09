@@ -29,7 +29,7 @@
 #include <list>
 #include <memory>
 
-#include <dpl/serialization.h>
+#include <policy.h>
 
 namespace AuthPasswd
 {
@@ -81,13 +81,7 @@ namespace AuthPasswd
         bool m_enable;
 
         //policy file data
-        unsigned int m_minLength;
-        unsigned int m_minComplexCharNumber;
-        unsigned int m_maxCharOccurrences;
-        unsigned int m_maxNumSeqLength;
-        unsigned int m_qualityType;
-        std::string m_pattern;
-        std::vector<std::string> m_forbiddenPasswds;
+        Policy m_policy;
     };
 }    //namespace AuthPasswd
 
