@@ -21,7 +21,9 @@ Authentication framework which is consist of client library and server daemon
 
 %global run_dir %{?TZ_SYS_RUN:%TZ_SYS_RUN}%{!?TZ_SYS_RUN:/var/run}
 %global bin_dir %{?TZ_SYS_BIN:%TZ_SYS_BIN}%{!?TZ_SYS_BIN:%_bindir}
-%global sbin_dir %{?TZ_SYS_SBIN:%TZ_SYS_SBIN}%{!?TZ_SYS_SBIN:%_sbindir}
+# image creation error occured if /usr/sbin used for ldconfig
+#%global sbin_dir %{?TZ_SYS_SBIN:%TZ_SYS_SBIN}%{!?TZ_SYS_SBIN:%_sbindir}
+%global sbin_dir /sbin
 %global rw_data_dir %{?TZ_SYS_DATA:%TZ_SYS_DATA/%name}%{!?TZ_SYS_DATA:/opt/data/%name}
 %global sock_passwd_check %{name}-passwd-check.socket
 %global sock_passwd_set %{name}-passwd-set.socket
