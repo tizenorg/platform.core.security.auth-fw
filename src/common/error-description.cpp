@@ -18,14 +18,16 @@
  * @version     1.0
  * @brief       Implementatin of errorToString function.
  */
-#include <string.h>
+#include "error-description.h"
 
-#include <error-description.h>
+#include <string.h>
+#include <symbol-visibility.h>
 
 #define MAX_BUF 256
 
 namespace AuthPasswd {
 
+COMMON_API
 std::string errnoToString(int err) {
     char buffer[MAX_BUF] = {};
 

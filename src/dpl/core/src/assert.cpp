@@ -24,9 +24,11 @@
 #include <dpl/colors.h>
 #include <dpl/log/log.h>
 #include <dpl/exception.h>
+#include <symbol-visibility.h>
 #include <cstdlib>
 
 namespace AuthPasswd {
+COMMON_API
 void AssertProc(const char *condition,
                 const char *file,
                 int line,

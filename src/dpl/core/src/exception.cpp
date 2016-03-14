@@ -29,6 +29,7 @@ Exception* Exception::m_lastException = NULL;
 unsigned int Exception::m_exceptionCount = 0;
 void (*Exception::m_terminateHandler)() = NULL;
 
+COMMON_API
 void LogUnhandledException(const std::string &str)
 {
     // Logging to console
@@ -38,6 +39,7 @@ void LogUnhandledException(const std::string &str)
     LogPedantic(str);
 }
 
+COMMON_API
 void LogUnhandledException(const std::string &str,
                            const char *filename,
                            int line,

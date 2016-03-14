@@ -29,14 +29,15 @@
 #include <generic-socket-manager.h>
 #include <message-buffer.h>
 
-namespace AuthPasswd
-{
-    struct ConnectionInfo {
-        InterfaceID interfaceID;
-        MessageBuffer buffer;
-    };
+namespace AuthPasswd {
 
-    typedef std::map<int, ConnectionInfo> ConnectionInfoMap;
+struct ConnectionInfo {
+    InterfaceID interfaceID;
+    MessageBuffer buffer;
+};
+
+typedef std::map<int, ConnectionInfo> ConnectionInfoMap;
+
 } //namespace AuthPasswd
 
 #endif //_CONNECTION_INFO_H_
