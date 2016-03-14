@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@
 #include <cstdlib>
 #include <sstream>
 
+#include <symbol-visibility.h>
+
 namespace AuthPasswd {
 void LogUnhandledException(const std::string &str);
 void LogUnhandledException(const std::string &str,
@@ -38,9 +40,8 @@ void LogUnhandledException(const std::string &str,
 }
 
 namespace AuthPasswd {
-class Exception
-{
-  private:
+class COMMON_API Exception {
+private:
     static unsigned int m_exceptionCount;
     static Exception* m_lastException;
     static void (*m_terminateHandler)();
@@ -85,11 +86,11 @@ class Exception
     std::string m_function;
     int m_line;
 
-  protected:
+protected:
     std::string m_message;
     std::string m_className;
 
-  public:
+public:
     static std::string KnownExceptionToString(const Exception &e)
     {
         std::ostringstream message;
@@ -287,6 +288,7 @@ class Exception
         return m_className;
     }
 };
+
 } // namespace AuthPasswd
 
 #define Try try

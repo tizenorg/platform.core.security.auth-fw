@@ -1,9 +1,5 @@
 /*
- *  Authentication password
- *
- *  Copyright (c) 2000 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
- *
- *  Contact: Jooseong Lee <jooseong.lee@samsung.com>
+ *  Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,26 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
-#ifndef _SMACK_CHECK_H_
-#define _SMACK_CHECK_H_
+/*
+ * @file        user-check.h
+ * @author      Jooseong Lee (jooseong.lee@samsung.com)
+ * @version     1.0
+ * @brief       Get user id from socket file descriptor of client.
+ */
+#pragma once
 
 namespace AuthPasswd {
 
-/*
- * A very simple runtime check for SMACK on the platform
- * Returns 1 if SMACK is present, 0 otherwise
- */
-
-int smack_runtime_check(void);
-
-/*
- * A very simple runtime check for SMACK on the platform
- * Returns 1 if SMACK is present, 0 otherwise. If SMACK_ENABLED is not defined
- * It returns 0.
- */
-int smack_check(void);
+int socket_get_user(int sockfd, unsigned int &user);
 
 } // namespace AuthPasswd
 
-#endif // _SMACK_CHECK_H_

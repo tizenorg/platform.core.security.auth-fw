@@ -1,9 +1,5 @@
 /*
- *  Authentication password
- *
- *  Copyright (c) 2000 - 2013 Samsung Electronics Co., Ltd All Rights Reserved
- *
- *  Contact: Jooseong Lee  <jooseong.lee@samsung.com>
+ *  Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,14 +12,12 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License
+ *
+ *
+ * @file        symbol-visibility.h
+ * @author      Kyungwook Tak (k.tak@samsung.com)
+ * @version     1.0
+ * @brief       define symbol visiblity for common library.
  */
 
-#include <sys/socket.h>
-#include <sys/un.h>
-
-namespace AuthPasswd {
-
-int socket_get_user(int sockfd, unsigned int &user);
-
-} // namespace AuthPasswd
-
+#define COMMON_API __attribute__((visibility("default")))

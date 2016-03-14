@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@
 #ifndef AUTH_PASSWD_BINARY_QUEUE_H
 #define AUTH_PASSWD_BINARY_QUEUE_H
 
-//#include <dpl/abstract_input_output.h>
 #include <dpl/exception.h>
 #include <dpl/noncopyable.h>
 #include <memory>
 #include <list>
+
+#include <symbol-visibility.h>
 
 namespace AuthPasswd {
 /**
@@ -40,13 +41,10 @@ typedef std::auto_ptr<BinaryQueue> BinaryQueueAutoPtr;
  *
  * @todo Add optimized implementation for FlattenConsume
  */
-class BinaryQueue
-//  : public AbstractInputOutput
-{
-  public:
-    class Exception
-    {
-      public:
+class COMMON_API BinaryQueue {
+public:
+    class Exception {
+    public:
         DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
         DECLARE_EXCEPTION_TYPE(Base, OutOfData)
     };
@@ -57,9 +55,8 @@ class BinaryQueue
                                   size_t bufferSize,
                                   void *userParam);
 
-    class BucketVisitor
-    {
-      public:
+    class BucketVisitor {
+    public:
         /**
          * Destructor
          */
@@ -75,10 +72,8 @@ class BinaryQueue
         virtual void OnVisitBucket(const void *buffer, size_t bufferSize) = 0;
     };
 
-  private:
-    struct Bucket :
-        private Noncopyable
-    {
+private:
+    struct Bucket : private Noncopyable {
         const void *buffer;
         const void *ptr;
         size_t size;
@@ -100,19 +95,18 @@ class BinaryQueue
 
     static void DeleteBucket(Bucket *bucket);
 
-    class BucketVisitorCall
-    {
-      private:
+    class BucketVisitorCall {
+    private:
         BucketVisitor *m_visitor;
 
-      public:
+    public:
         BucketVisitorCall(BucketVisitor *visitor);
         virtual ~BucketVisitorCall();
 
         void operator()(Bucket *bucket) const;
     };
 
-  public:
+public:
     /**
      * Construct empty binary queue
      */

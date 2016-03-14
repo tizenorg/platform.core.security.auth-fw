@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,9 +24,11 @@
 #include <dpl/colors.h>
 #include <dpl/log/log.h>
 #include <dpl/exception.h>
+#include <symbol-visibility.h>
 #include <cstdlib>
 
 namespace AuthPasswd {
+COMMON_API
 void AssertProc(const char *condition,
                 const char *file,
                 int line,
