@@ -1,10 +1,10 @@
 PKG_CHECK_MODULES(SERVER_DEP
+    REQUIRED
     dlog
     openssl
     libsmack
     libsystemd-daemon
     libtzplatform-config
-    REQUIRED
     )
 FIND_PACKAGE(Threads REQUIRED)
 

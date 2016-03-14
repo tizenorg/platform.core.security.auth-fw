@@ -59,14 +59,14 @@ namespace AuthPasswd
 
         if (!dirExists(RW_DATA_DIR)) {
             if(mkdir(RW_DATA_DIR, 0700)) {
-                LogError("Failed to create directory for files. Error: " << strerror(errno));
+                LogError("Failed to create directory for files. Error: " << errnoToString());
                 Throw(PasswordException::MakeDirError);
             }
         }
 
         if (!dirExists(userDir.c_str())) {
             if(mkdir(userDir.c_str(), 0700)) {
-                LogError("Failed to create directory for files. Error: " << strerror(errno));
+                LogError("Failed to create directory for files. Error: " << errnoToString());
                 Throw(PasswordException::MakeDirError);
             }
         }
@@ -139,7 +139,7 @@ namespace AuthPasswd
         policyBuffer.Save(policyFile);
 
         if (chmod(policyFile.c_str(), FILE_MODE)) {
-            LogError("Failed to chmod for " << policyFile << " Error: " << strerror(errno));
+            LogError("Failed to chmod for " << policyFile << " Error: " << errnoToString());
             Throw(PasswordException::ChmodError);
         }
     }

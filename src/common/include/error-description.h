@@ -22,10 +22,11 @@
 #define _AUTH_PASSWD_ERROR_DESCRIPTION_
 
 #include <string>
+#include <cerrno>
 
 namespace AuthPasswd {
 
-std::string errnoToString(int err);
+std::string errnoToString(int err = errno);
 
 } // namespace AuthPasswd
 

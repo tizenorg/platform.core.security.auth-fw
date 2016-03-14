@@ -154,14 +154,14 @@ namespace AuthPasswd
 
         if (!dirExists(RW_DATA_DIR)) {
             if(mkdir(RW_DATA_DIR, 0700)) {
-                LogError("Failed to create directory for files. Error: " << strerror(errno));
+                LogError("Failed to create directory for files. Error: " << errnoToString());
                 Throw(PasswordException::MakeDirError);
             }
         }
 
         if (!dirExists(userDir.c_str())) {
             if(mkdir(userDir.c_str(), 0700)) {
-                LogError("Failed to create directory for files. Error: " << strerror(errno));
+                LogError("Failed to create directory for files. Error: " << errnoToString());
                 Throw(PasswordException::MakeDirError);
             }
         }
@@ -203,7 +203,7 @@ namespace AuthPasswd
                 // and remove old file
                 if (remove(oldVersionPwdFile.c_str())) {
                     LogError("Failed to remove file" << oldVersionPwdFile <<
-                             " Error: " << strerror(errno));
+                             " Error: " << errnoToString());
                     Throw(PasswordException::RemoveError);
                 }
                 return;
@@ -297,7 +297,7 @@ namespace AuthPasswd
         pwdBuffer.Save(pwdFile);
 
         if (chmod(pwdFile.c_str(), FILE_MODE)) {
-            LogError("Failed to chmod for " << pwdFile << " Error: " << strerror(errno));
+            LogError("Failed to chmod for " << pwdFile << " Error: " << errnoToString());
             Throw(PasswordException::ChmodError);
         }
     }

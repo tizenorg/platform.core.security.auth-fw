@@ -1,7 +1,7 @@
 PKG_CHECK_MODULES(COMMON_DEP
+    REQUIRED
     dlog
     libsmack
-    REQUIRED
     )
 
 SET(COMMON_SOURCES
@@ -27,7 +27,7 @@ SET(COMMON_SOURCES
 SET_SOURCE_FILES_PROPERTIES(
     ${COMMON_SOURCES}
     PROPERTIES
-        COMPILE_FLAGS "-fvisibility=default"
+        COMPILE_FLAGS "-D_GNU_SOURCE -fPIC -fvisibility=default" #TODO: visibility hidden
     )
 
 INCLUDE_DIRECTORIES(SYSTEM
@@ -47,8 +47,7 @@ ADD_LIBRARY(${TARGET_COMMON} SHARED ${COMMON_SOURCES})
 SET_TARGET_PROPERTIES(
     ${TARGET_COMMON}
     PROPERTIES
-        COMPILE_FLAGS "-D_GNU_SOURCE -fPIC"
-        SOVERSION 1.0.0
+        SOVERSION 1.0.0 #TODO: version tracking by rpm spec version specification
         VERSION 1.0.0
     )
 
