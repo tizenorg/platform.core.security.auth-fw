@@ -24,6 +24,7 @@
 #include <policy-file.h>
 
 #include <fstream>
+#include <vector>
 #include <regex.h>
 
 #include <fcntl.h>
@@ -212,25 +213,20 @@ namespace AuthPasswd
         m_policy.minComplexCharNumber = minComplexCharNumber;
     }
 
-    // policy maxCharOccurrences
     bool PolicyFile::checkMaxCharOccurrences(const std::string &password) const
     {
-        unsigned int i = 0;
-        unsigned char ch;
-        char occurrence[256]= {0, };
+        std::vector<unsigned int> occurrence(256, 0);
 
         if (m_policy.maxCharOccurrences == 0)
             return true;
 
-        for (i = 0; i < password.size(); i++) {
-            ch = (unsigned char)password[i];
-            occurrence[ch]++;
-        }
+        for (auto ch : password)
+            occurrence[static_cast<unsigned char>(ch)]++;
 
-        for (i = 0; i<256; i++) {
-            if(occurrence[i] > m_policy.maxCharOccurrences)
+        for (auto item : occurrence)
+            if (item > m_policy.maxCharOccurrences)
                 return false;
-        }
+
         return true;
     }
 
