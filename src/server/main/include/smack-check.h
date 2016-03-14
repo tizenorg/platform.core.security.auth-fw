@@ -1,5 +1,9 @@
 /*
+ *  Authentication password
+ *
  *  Copyright (c) 2000 - 2016 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *  Contact: Jooseong Lee <jooseong.lee@samsung.com>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -12,34 +16,20 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License
- *
- * @file        error-description.cpp
- * @author      Bartlomiej Grzelewski (b.grzelewski@samsung.com)
- * @version     1.0
- * @brief       Implementatin of errorToString function.
  */
-#include "error-description.h"
 
-#include <string.h>
-#include <symbol-visibility.h>
-
-#define MAX_BUF 256
+#ifndef _SMACK_CHECK_H_
+#define _SMACK_CHECK_H_
 
 namespace AuthPasswd {
 
-COMMON_API
-std::string errnoToString(int err) {
-    char buffer[MAX_BUF] = {};
-
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE
-    if (0 == strerror_r(err, buffer, MAX_BUF))
-        return std::string(buffer);
-#else
-    char *result = strerror_r(err, buffer, MAX_BUF);
-    if (result)
-        return std::string(result);
-#endif
-    return std::string();
-}
+/*
+ * A very simple runtime check for SMACK on the platform
+ * Returns 1 if SMACK is present, 0 otherwise. If SMACK_ENABLED is not defined
+ * It returns 0.
+ */
+int smack_check(void);
 
 } // namespace AuthPasswd
+
+#endif // _SMACK_CHECK_H_

@@ -16,7 +16,7 @@
  *  limitations under the License
  */
 /*
- * @file        secket-buffer.h
+ * @file        message-buffer.h
  * @author      Bartlomiej Grzelewski (b.grzelewski@samsung.com)
  * @version     1.0
  * @brief       Implementatin of MessageBuffer.
@@ -30,15 +30,15 @@
 #include <dpl/binary_queue.h>
 #include <dpl/exception.h>
 #include <dpl/serialization.h>
+#include <symbol-visibility.h>
 
 namespace AuthPasswd {
 
 typedef std::vector<unsigned char> RawBuffer;
 
-class MessageBuffer : public AuthPasswd::IStream {
+class COMMON_API MessageBuffer : public AuthPasswd::IStream {
 public:
-    class Exception
-    {
+    class Exception {
     public:
         DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
         DECLARE_EXCEPTION_TYPE(Base, OutOfData)
@@ -71,7 +71,7 @@ protected:
     }
 
     size_t m_bytesLeft;
-    AuthPasswd::BinaryQueue m_buffer;
+    BinaryQueue m_buffer;
 };
 
 } // namespace AuthPasswd

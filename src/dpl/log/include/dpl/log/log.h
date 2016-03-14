@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2016 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 #include <dpl/singleton.h>
 #include <dpl/noncopyable.h>
 #include <dpl/log/abstract_log_provider.h>
+#include <symbol-visibility.h>
 #include <sstream>
 #include <list>
 
@@ -36,16 +37,14 @@ namespace Log {
  * To switch logs into old style, export
  * DPL_USE_OLD_STYLE_LOGS before application start
  */
-class LogSystem :
-    private Noncopyable
-{
-  private:
+class COMMON_API LogSystem : private Noncopyable {
+private:
     typedef std::list<AbstractLogProvider *> AbstractLogProviderPtrList;
     AbstractLogProviderPtrList m_providers;
 
     bool m_isLoggingEnabled;
 
-  public:
+public:
     bool IsLoggingEnabled() const;
     LogSystem();
     virtual ~LogSystem();
@@ -143,9 +142,8 @@ class LogSystem :
 /*
  * Replacement low overhead null logging class
  */
-class NullStream
-{
-  public:
+class COMMON_API NullStream {
+public:
     NullStream() {}
 
     template <typename T>

@@ -30,27 +30,54 @@
 #include <string>
 #include <auth-passwd-policy-types.h>
 #include <dpl/serialization.h>
+#include <symbol-visibility.h>
 
 namespace AuthPasswd {
 
+COMMON_API
 extern const size_t MAX_PASSWORD_LEN;
+
+COMMON_API
 extern const unsigned int MAX_PASSWORD_HISTORY;
+
+COMMON_API
 extern const unsigned int MAX_PASSWORD_ATTEMPTS;
+
+COMMON_API
 extern const unsigned int PASSWORD_INFINITE_EXPIRATION_DAYS;
+
+COMMON_API
 extern const unsigned int PASSWORD_INFINITE_ATTEMPT_COUNT;
+
+COMMON_API
 extern const unsigned int PASSWORD_API_NO_EXPIRATION;
 
+COMMON_API
 extern const char* NO_PASSWORD;
+
+COMMON_API
 extern const char* NO_PATTERN;
+
+COMMON_API
 extern const char* NO_FORBIDDEND_PASSWORD;
 
+
+COMMON_API
 extern const std::string REGEX_QUALITY_UNSPECIFIED;
+
+COMMON_API
 extern const std::string REGEX_QUALITY_SOMETHING;
+
+COMMON_API
 extern const std::string REGEX_QUALITY_NUMERIC;
+
+COMMON_API
 extern const std::string REGEX_QUALITY_ALPHABETIC;
+
+COMMON_API
 extern const std::string REGEX_QUALITY_ALPHANUMERIC;
 
-struct Policy {
+struct COMMON_API Policy {
     Policy();
     ~Policy();
 
@@ -96,7 +123,7 @@ struct Policy {
     std::set<std::string> forbiddenPasswds;
 };
 
-struct PolicySerializable : public Policy, ISerializable {
+struct COMMON_API PolicySerializable : public Policy, ISerializable {
     explicit PolicySerializable(const Policy &);
     explicit PolicySerializable(IStream &);
     void Serialize(IStream &) const;

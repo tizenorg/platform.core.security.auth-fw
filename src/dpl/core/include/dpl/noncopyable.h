@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 /*
- * @file        noncopyable
+ * @file        noncopyable.h
  * @author      Przemyslaw Dobrowolski (p.dobrowolsk@samsung.com)
  * @version     1.0
  * @brief       This file is the implementation file of noncopyable
@@ -23,15 +23,14 @@
 #define AUTHPASSWD_NONCOPYABLE_H
 
 namespace AuthPasswd {
-class Noncopyable
-{
-  private:
+class Noncopyable {
+public:
+    Noncopyable() {}
+    virtual ~Noncopyable() {}
+
+private:
     Noncopyable(const Noncopyable &);
     const Noncopyable &operator=(const Noncopyable &);
-
-  public:
-    Noncopyable();
-    virtual ~Noncopyable();
 };
 } // namespace AuthPasswd
 

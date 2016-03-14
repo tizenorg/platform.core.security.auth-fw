@@ -30,15 +30,23 @@
 #include <time.h>
 #include <sys/types.h>
 
+#include <symbol-visibility.h>
+
 namespace AuthPasswd {
 
+COMMON_API
 extern char const * const SERVICE_SOCKET_PASSWD_CHECK;
+
+COMMON_API
 extern char const * const SERVICE_SOCKET_PASSWD_SET;
+
+COMMON_API
 extern char const * const SERVICE_SOCKET_PASSWD_RESET;
+
+COMMON_API
 extern char const * const SERVICE_SOCKET_PASSWD_POLICY;
 
-enum class PasswordHdrs
-{
+enum class PasswordHdrs {
     HDR_CHK_PASSWD,
     HDR_CHK_PASSWD_STATE,
     HDR_CHK_PASSWD_REUSED,
