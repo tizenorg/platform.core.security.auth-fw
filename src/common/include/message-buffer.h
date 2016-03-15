@@ -38,40 +38,37 @@ typedef std::vector<unsigned char> RawBuffer;
 
 class COMMON_API MessageBuffer : public AuthPasswd::IStream {
 public:
-    class Exception {
-    public:
-        DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
-        DECLARE_EXCEPTION_TYPE(Base, OutOfData)
-    };
+	class Exception {
+	public:
+		DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
+		DECLARE_EXCEPTION_TYPE(Base, OutOfData)
+	};
 
-    MessageBuffer()
-      : m_bytesLeft(0)
-    {}
+	MessageBuffer() : m_bytesLeft(0) {}
 
-    void Push(const RawBuffer &data);
+	void Push(const RawBuffer &data);
 
-    RawBuffer Pop();
+	RawBuffer Pop();
 
-    bool Ready();
+	bool Ready();
 
-    virtual void Read(size_t num, void *bytes);
+	virtual void Read(size_t num, void *bytes);
 
-    virtual void Write(size_t num, const void *bytes);
+	virtual void Write(size_t num, const void *bytes);
 
 protected:
+	inline void CountBytesLeft() {
+		if (m_bytesLeft > 0)
+			return;  // we already counted m_bytesLeft nothing to do
 
-    inline void CountBytesLeft() {
-        if (m_bytesLeft > 0)
-            return;  // we already counted m_bytesLeft nothing to do
+		if (m_buffer.Size() < sizeof(size_t))
+			return;  // we cannot count m_bytesLeft because buffer is too small
 
-        if (m_buffer.Size() < sizeof(size_t))
-            return;  // we cannot count m_bytesLeft because buffer is too small
+		m_buffer.FlattenConsume(&m_bytesLeft, sizeof(size_t));
+	}
 
-        m_buffer.FlattenConsume(&m_bytesLeft, sizeof(size_t));
-    }
-
-    size_t m_bytesLeft;
-    BinaryQueue m_buffer;
+	size_t m_bytesLeft;
+	BinaryQueue m_buffer;
 };
 
 } // namespace AuthPasswd

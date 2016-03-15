@@ -27,25 +27,23 @@
 
 #include <dpl/exception.h>
 
-namespace AuthPasswd
-{
-    class PasswordException
-    {
-    public:
-        DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
-        DECLARE_EXCEPTION_TYPE(Base, OutOfData)
-        DECLARE_EXCEPTION_TYPE(Base, NoData)
-        DECLARE_EXCEPTION_TYPE(Base, FStreamOpenError)
-        DECLARE_EXCEPTION_TYPE(Base, FStreamWriteError)
-        DECLARE_EXCEPTION_TYPE(Base, FStreamReadError)
-        DECLARE_EXCEPTION_TYPE(Base, MemoryError)
-        DECLARE_EXCEPTION_TYPE(Base, NoPasswords)
-        DECLARE_EXCEPTION_TYPE(Base, PasswordNotActive)
-        DECLARE_EXCEPTION_TYPE(Base, MakeDirError)
-		DECLARE_EXCEPTION_TYPE(Base, ChmodError)
-		DECLARE_EXCEPTION_TYPE(Base, RemoveError)
-        DECLARE_EXCEPTION_TYPE(Base, TimerError)
-    };
+namespace AuthPasswd {
+class PasswordException {
+public:
+	DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
+	DECLARE_EXCEPTION_TYPE(Base, OutOfData)
+	DECLARE_EXCEPTION_TYPE(Base, NoData)
+	DECLARE_EXCEPTION_TYPE(Base, FStreamOpenError)
+	DECLARE_EXCEPTION_TYPE(Base, FStreamWriteError)
+	DECLARE_EXCEPTION_TYPE(Base, FStreamReadError)
+	DECLARE_EXCEPTION_TYPE(Base, MemoryError)
+	DECLARE_EXCEPTION_TYPE(Base, NoPasswords)
+	DECLARE_EXCEPTION_TYPE(Base, PasswordNotActive)
+	DECLARE_EXCEPTION_TYPE(Base, MakeDirError)
+	DECLARE_EXCEPTION_TYPE(Base, ChmodError)
+	DECLARE_EXCEPTION_TYPE(Base, RemoveError)
+	DECLARE_EXCEPTION_TYPE(Base, TimerError)
+};
 } //namespace AuthPasswd
 
 #endif //_PASSWORD_EXCEPTION_H_

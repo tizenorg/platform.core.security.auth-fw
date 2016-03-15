@@ -22,24 +22,20 @@
 #ifndef AUTHPASSWD_SINGLETON_SAFE_IMPL_H
 #define AUTHPASSWD_SINGLETON_SAFE_IMPL_H
 
-#define IMPLEMENT_SAFE_SINGLETON(Class)                                        \
-    namespace AuthPasswd {                                                         \
-    template<>                                                                     \
-    Singleton<Class>&Singleton<Class>::InternalInstance()                         \
-    {                                                                              \
-        static Singleton<Class> instance;                                          \
-        return instance;                                                           \
-    }                                                                              \
-                                                                               \
-    template<>                                                                     \
-    Class & Singleton<Class>::Instance()                                            \
-    {                                                                              \
-        Singleton<Class>& instance = Singleton<Class>::InternalInstance();         \
-        return instance;                                                           \
-    }                                                                              \
-                                                                               \
-    template Singleton<Class>&Singleton<Class>::InternalInstance();               \
-    template Class & Singleton<Class>::Instance();                                  \
-    } // namespace AuthPasswd
+#define IMPLEMENT_SAFE_SINGLETON(Class)                                    \
+	namespace AuthPasswd {                                                 \
+	template<>                                                             \
+	Singleton<Class>&Singleton<Class>::InternalInstance() {                \
+		static Singleton<Class> instance;                                  \
+		return instance;                                                   \
+	}                                                                      \
+	template<>                                                             \
+	Class & Singleton<Class>::Instance() {                                 \
+		Singleton<Class>& instance = Singleton<Class>::InternalInstance(); \
+		return instance;                                                   \
+	}                                                                      \
+	template Singleton<Class>&Singleton<Class>::InternalInstance();        \
+	template Class & Singleton<Class>::Instance();                         \
+	} // namespace AuthPasswd
 
 #endif // AUTHPASSWD_SINGLETON_SAFE_IMPL_H

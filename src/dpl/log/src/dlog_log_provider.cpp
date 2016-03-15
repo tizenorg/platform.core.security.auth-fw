@@ -30,17 +30,15 @@
 namespace AuthPasswd {
 namespace Log {
 std::string DLOGLogProvider::FormatMessage(const char *message,
-                                           const char *filename,
-                                           int line,
-                                           const char *function)
+		const char *filename,
+		int line,
+		const char *function)
 {
-    std::ostringstream val;
-
-    val << std::string("[") <<
-    LocateSourceFileName(filename) << std::string(":") << line <<
-    std::string("] ") << function << std::string("(): ") << message;
-
-    return val.str();
+	std::ostringstream val;
+	val << std::string("[") <<
+		LocateSourceFileName(filename) << std::string(":") << line <<
+		std::string("] ") << function << std::string("(): ") << message;
+	return val.str();
 }
 
 DLOGLogProvider::DLOGLogProvider()
@@ -51,94 +49,96 @@ DLOGLogProvider::~DLOGLogProvider()
 
 void DLOGLogProvider::SetTag(const char *tag)
 {
-    size_t size = strlen(tag)+1;
-    char *buff = new (std::nothrow) char[size];
-    if (buff)
-        memcpy(buff, tag, size);
-    m_tag.reset(buff);
+	size_t size = strlen(tag) + 1;
+	char *buff = new(std::nothrow) char[size];
+
+	if (buff)
+		memcpy(buff, tag, size);
+
+	m_tag.reset(buff);
 }
 
 void DLOGLogProvider::Debug(const char *message,
-                            const char *filename,
-                            int line,
-                            const char *function)
+							const char *filename,
+							int line,
+							const char *function)
 {
-    SLOG(LOG_DEBUG, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SLOG(LOG_DEBUG, m_tag.get(), "%s",
+		 FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::Info(const char *message,
-                           const char *filename,
-                           int line,
-                           const char *function)
+						   const char *filename,
+						   int line,
+						   const char *function)
 {
-    SLOG(LOG_INFO, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SLOG(LOG_INFO, m_tag.get(), "%s",
+		 FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::Warning(const char *message,
-                              const char *filename,
-                              int line,
-                              const char *function)
+							  const char *filename,
+							  int line,
+							  const char *function)
 {
-    SLOG(LOG_WARN, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SLOG(LOG_WARN, m_tag.get(), "%s",
+		 FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::Error(const char *message,
-                            const char *filename,
-                            int line,
-                            const char *function)
+							const char *filename,
+							int line,
+							const char *function)
 {
-    SLOG(LOG_ERROR, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SLOG(LOG_ERROR, m_tag.get(), "%s",
+		 FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::Pedantic(const char *message,
-                               const char *filename,
-                               int line,
-                               const char *function)
+							   const char *filename,
+							   int line,
+							   const char *function)
 {
-    SLOG(LOG_DEBUG, "AuthPasswd", "%s", FormatMessage(message,
-                                              filename,
-                                              line,
-                                              function).c_str());
+	SLOG(LOG_DEBUG, "AuthPasswd", "%s", FormatMessage(message,
+			filename,
+			line,
+			function).c_str());
 }
 
 void DLOGLogProvider::SecureDebug(const char *message UNUSED,
-                            const char *filename UNUSED,
-                            int line UNUSED,
-                            const char *function UNUSED)
+								  const char *filename UNUSED,
+								  int line UNUSED,
+								  const char *function UNUSED)
 {
-    SECURE_SLOG(LOG_DEBUG, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SECURE_SLOG(LOG_DEBUG, m_tag.get(), "%s",
+				FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::SecureInfo(const char *message UNUSED,
-                           const char *filename UNUSED,
-                           int line UNUSED,
-                           const char *function UNUSED)
+								 const char *filename UNUSED,
+								 int line UNUSED,
+								 const char *function UNUSED)
 {
-    SECURE_SLOG(LOG_INFO, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SECURE_SLOG(LOG_INFO, m_tag.get(), "%s",
+				FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::SecureWarning(const char *message UNUSED,
-                              const char *filename UNUSED,
-                              int line UNUSED,
-                              const char *function UNUSED)
+									const char *filename UNUSED,
+									int line UNUSED,
+									const char *function UNUSED)
 {
-    SECURE_SLOG(LOG_WARN, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SECURE_SLOG(LOG_WARN, m_tag.get(), "%s",
+				FormatMessage(message, filename, line, function).c_str());
 }
 
 void DLOGLogProvider::SecureError(const char *message UNUSED,
-                            const char *filename UNUSED,
-                            int line UNUSED,
-                            const char *function UNUSED)
+								  const char *filename UNUSED,
+								  int line UNUSED,
+								  const char *function UNUSED)
 {
-    SECURE_SLOG(LOG_ERROR, m_tag.get(), "%s",
-        FormatMessage(message, filename, line, function).c_str());
+	SECURE_SLOG(LOG_ERROR, m_tag.get(), "%s",
+				FormatMessage(message, filename, line, function).c_str());
 }
 
 } // nemespace Log

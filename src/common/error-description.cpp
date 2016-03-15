@@ -28,18 +28,22 @@
 namespace AuthPasswd {
 
 COMMON_API
-std::string errnoToString(int err) {
-    char buffer[MAX_BUF] = {};
-
+std::string errnoToString(int err)
+{
+	char buffer[MAX_BUF] = {};
 #if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && !_GNU_SOURCE
-    if (0 == strerror_r(err, buffer, MAX_BUF))
-        return std::string(buffer);
+
+	if (0 == strerror_r(err, buffer, MAX_BUF))
+		return std::string(buffer);
+
 #else
-    char *result = strerror_r(err, buffer, MAX_BUF);
-    if (result)
-        return std::string(result);
+	char *result = strerror_r(err, buffer, MAX_BUF);
+
+	if (result)
+		return std::string(result);
+
 #endif
-    return std::string();
+	return std::string();
 }
 
 } // namespace AuthPasswd

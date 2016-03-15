@@ -52,8 +52,8 @@ extern "C" {
 #endif
 
 int auth_passwd_reset_passwd(password_type passwd_type,
-                             uid_t uid,
-                             const char *new_passwd);
+							 uid_t uid,
+							 const char *new_passwd);
 
 int auth_passwd_new_policy(policy_h **pp_policy);
 

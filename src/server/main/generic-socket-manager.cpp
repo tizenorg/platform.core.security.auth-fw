@@ -31,86 +31,87 @@ namespace AuthPasswd {
 
 class SendMsgData::Internal {
 public:
-    Internal(int resultCode, int fileDesc)
-      : m_resultCode(resultCode)
-      , m_fileDesc(fileDesc)
-    {
-        memset(&m_hdr, 0, sizeof(msghdr));
-        memset(m_cmsgbuf, 0, CMSG_SPACE(sizeof(int)));
+	Internal(int resultCode, int fileDesc) :
+		m_resultCode(resultCode),
+		m_fileDesc(fileDesc) {
+		memset(&m_hdr, 0, sizeof(msghdr));
+		memset(m_cmsgbuf, 0, CMSG_SPACE(sizeof(int)));
+		m_iov.iov_base = &m_resultCode;
+		m_iov.iov_len = sizeof(m_resultCode);
+		m_hdr.msg_iov = &m_iov;
+		m_hdr.msg_iovlen = 1;
 
-        m_iov.iov_base = &m_resultCode;
-        m_iov.iov_len = sizeof(m_resultCode);
+		if (fileDesc != -1) {
+			m_hdr.msg_control = m_cmsgbuf;
+			m_hdr.msg_controllen = CMSG_SPACE(sizeof(int));
+			m_cmsg = CMSG_FIRSTHDR(&m_hdr);
+			m_cmsg->cmsg_len = CMSG_LEN(sizeof(int));
+			m_cmsg->cmsg_level = SOL_SOCKET;
+			m_cmsg->cmsg_type = SCM_RIGHTS;
+			memmove(CMSG_DATA(m_cmsg), &m_fileDesc, sizeof(int));
+		}
+	}
 
-        m_hdr.msg_iov = &m_iov;
-        m_hdr.msg_iovlen = 1;
-
-        if (fileDesc != -1) {
-            m_hdr.msg_control = m_cmsgbuf;
-            m_hdr.msg_controllen = CMSG_SPACE(sizeof(int));
-
-            m_cmsg = CMSG_FIRSTHDR(&m_hdr);
-            m_cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-            m_cmsg->cmsg_level = SOL_SOCKET;
-            m_cmsg->cmsg_type = SCM_RIGHTS;
-
-            memmove(CMSG_DATA(m_cmsg), &m_fileDesc, sizeof(int));
-        }
-    }
-
-    msghdr* data() { return &m_hdr; }
+	msghdr *data() {
+		return &m_hdr;
+	}
 
 private:
-    msghdr m_hdr;
-    iovec m_iov;
-    cmsghdr *m_cmsg;
-    unsigned char m_cmsgbuf[CMSG_SPACE(sizeof(int))];
-    int m_resultCode;
-    int m_fileDesc;
+	msghdr m_hdr;
+	iovec m_iov;
+	cmsghdr *m_cmsg;
+	unsigned char m_cmsgbuf[CMSG_SPACE(sizeof(int))];
+	int m_resultCode;
+	int m_fileDesc;
 };
 
-SendMsgData::SendMsgData()
-  : m_resultCode(0)
-  , m_fileDesc(-1)
-  , m_flags(0)
-  , m_pimpl(NULL)
+SendMsgData::SendMsgData() :
+	m_resultCode(0),
+	m_fileDesc(-1),
+	m_flags(0),
+	m_pimpl(NULL)
 {}
 
-SendMsgData::SendMsgData(int resultCode, int fileDesc, int paramFlags)
-  : m_resultCode(resultCode)
-  , m_fileDesc(fileDesc)
-  , m_flags(paramFlags)
-  , m_pimpl(NULL)
+SendMsgData::SendMsgData(int resultCode, int fileDesc, int paramFlags) :
+	m_resultCode(resultCode),
+	m_fileDesc(fileDesc),
+	m_flags(paramFlags),
+	m_pimpl(NULL)
 {}
 
-SendMsgData::SendMsgData(const SendMsgData &second)
-  : m_resultCode(second.m_resultCode)
-  , m_fileDesc(second.m_fileDesc)
-  , m_flags(second.m_flags)
-  , m_pimpl(NULL)
+SendMsgData::SendMsgData(const SendMsgData &second) :
+	m_resultCode(second.m_resultCode),
+	m_fileDesc(second.m_fileDesc),
+	m_flags(second.m_flags),
+	m_pimpl(NULL)
 {}
 
-SendMsgData::~SendMsgData() {
-    delete m_pimpl;
+SendMsgData::~SendMsgData()
+{
+	delete m_pimpl;
 }
 
-SendMsgData& SendMsgData::operator=(const SendMsgData &second) {
-    m_resultCode = second.m_resultCode;
-    m_fileDesc = second.m_fileDesc;
-    m_flags = second.m_flags;
-    delete m_pimpl;
-    m_pimpl = NULL;
-    return *this;
+SendMsgData &SendMsgData::operator=(const SendMsgData &second)
+{
+	m_resultCode = second.m_resultCode;
+	m_fileDesc = second.m_fileDesc;
+	m_flags = second.m_flags;
+	delete m_pimpl;
+	m_pimpl = NULL;
+	return *this;
 }
 
-msghdr* SendMsgData::getMsghdr() {
-    if (!m_pimpl)
-        m_pimpl = new Internal(m_resultCode, m_fileDesc);
-    return m_pimpl->data();
+msghdr *SendMsgData::getMsghdr()
+{
+	if (!m_pimpl)
+		m_pimpl = new Internal(m_resultCode, m_fileDesc);
+
+	return m_pimpl->data();
 }
 
-int SendMsgData::flags() {
-    return m_flags;
+int SendMsgData::flags()
+{
+	return m_flags;
 }
 
 } // namespace AuthPasswd
-

@@ -32,25 +32,23 @@
 
 #include <dpl/serialization.h>
 
-namespace AuthPasswd
-{
-    class PasswordFileBuffer: public IStream
-    {
-    public:
-        PasswordFileBuffer();
+namespace AuthPasswd {
+class PasswordFileBuffer: public IStream {
+public:
+	PasswordFileBuffer();
 
-        virtual void Read(size_t num, void *bytes);
-        virtual void Write(size_t num, const void *bytes);
+	virtual void Read(size_t num, void *bytes);
+	virtual void Write(size_t num, const void *bytes);
 
-        void Save(const std::string &path);
-        void Load(const std::string &path);
+	void Save(const std::string &path);
+	void Load(const std::string &path);
 
-    private:
-        typedef std::vector<char> DataBuffer;
+private:
+	typedef std::vector<char> DataBuffer;
 
-        DataBuffer m_buffer;
-        size_t m_bufferReadBytes;
-    };
+	DataBuffer m_buffer;
+	size_t m_bufferReadBytes;
+};
 } //namespace AuthPasswd
 
 #endif

@@ -52,26 +52,26 @@ extern "C" {
 #endif
 
 int auth_passwd_check_passwd(password_type passwd_type,
-                             const char *passwd,
-                             unsigned int *current_attempts,
-                             unsigned int *max_attempts,
-                             unsigned int *valid_secs);
+							 const char *passwd,
+							 unsigned int *current_attempts,
+							 unsigned int *max_attempts,
+							 unsigned int *valid_secs);
 
 int auth_passwd_check_passwd_state(password_type passwd_type,
-                                   unsigned int *current_attempts,
-                                   unsigned int *max_attempts,
-                                   unsigned int *valid_secs);
+								   unsigned int *current_attempts,
+								   unsigned int *max_attempts,
+								   unsigned int *valid_secs);
 
 int auth_passwd_check_passwd_reused(password_type passwd_type,
-                                    const char *passwd,
-                                    int *is_reused);
+									const char *passwd,
+									int *is_reused);
 
 int auth_passwd_set_passwd(password_type passwd_type,
-                           const char *cur_passwd,
-                           const char *new_passwd);
+						   const char *cur_passwd,
+						   const char *new_passwd);
 
 int auth_passwd_set_passwd_recovery(const char *cur_recovery_passwd,
-                                    const char *new_normal_passwd);
+									const char *new_normal_passwd);
 
 #ifdef __cplusplus
 }

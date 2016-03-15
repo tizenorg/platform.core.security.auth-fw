@@ -25,12 +25,12 @@
 namespace AuthPasswd {
 class Noncopyable {
 public:
-    Noncopyable() {}
-    virtual ~Noncopyable() {}
+	Noncopyable() {}
+	virtual ~Noncopyable() {}
 
 private:
-    Noncopyable(const Noncopyable &);
-    const Noncopyable &operator=(const Noncopyable &);
+	Noncopyable(const Noncopyable &);
+	const Noncopyable &operator=(const Noncopyable &);
 };
 } // namespace AuthPasswd
 

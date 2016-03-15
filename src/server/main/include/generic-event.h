@@ -28,7 +28,7 @@
 namespace AuthPasswd {
 
 struct GenericEvent {
-    virtual ~GenericEvent(){}
+	virtual ~GenericEvent() {}
 };
 
 } // namespace AuthPasswd

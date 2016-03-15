@@ -38,138 +38,137 @@
 
 #include "generic-event.h"
 
-#define DEFINE_THREAD_EVENT(eventType)                                \
-    void Event(const eventType &event) {                              \
-        AuthPasswd::ServiceThread<ParentClassName>::                  \
-            Event(event,                                              \
-                  this,                                               \
-                  &ParentClassName::EventInternal##eventType);        \
-    }                                                                 \
-    void EventInternal##eventType(const eventType &event)
+#define DEFINE_THREAD_EVENT(eventType)                     \
+	void Event(const eventType &event) {                   \
+		AuthPasswd::ServiceThread<ParentClassName>::       \
+		Event(event,                                       \
+			  this,                                        \
+			  &ParentClassName::EventInternal##eventType); \
+	}                                                      \
+	void EventInternal##eventType(const eventType &event)
 
-#define DECLARE_THREAD_EVENT(eventType, methodName)                   \
-    void Event(const eventType &event) {                              \
-        AuthPasswd::ServiceThread<ParentClassName>::                  \
-            Event(event,                                              \
-                  this,                                               \
-                  &ParentClassName::methodName);                      \
-    }
+#define DECLARE_THREAD_EVENT(eventType, methodName)        \
+	void Event(const eventType &event) {                   \
+		AuthPasswd::ServiceThread<ParentClassName>::       \
+		Event(event,                                       \
+			  this,                                        \
+			  &ParentClassName::methodName);               \
+	}
 
 namespace AuthPasswd {
 
 template <class Service>
 class ServiceThread {
 public:
-    typedef Service ParentClassName;
-    enum class State {
-        NoThread,
-        Work,
-    };
+	typedef Service ParentClassName;
+	enum class State {
+		NoThread,
+		Work,
+	};
 
-    ServiceThread()
-      : m_state(State::NoThread)
-      , m_quit(false)
-    {}
+	ServiceThread() : m_state(State::NoThread), m_quit(false) {}
 
-    void Create() {
-        assert(m_state == State::NoThread);
-        m_thread = std::thread(ThreadLoopStatic, this);
-        m_state = State::Work;
-    }
+	void Create() {
+		assert(m_state == State::NoThread);
+		m_thread = std::thread(ThreadLoopStatic, this);
+		m_state = State::Work;
+	}
 
-    void Join() {
-        assert(m_state != State::NoThread);
-        {
-            std::lock_guard<std::mutex> lock(m_eventQueueMutex);
-            m_quit = true;
-            m_waitCondition.notify_one();
-        }
-        m_thread.join();
-        m_state = State::NoThread;
-    }
+	void Join() {
+		assert(m_state != State::NoThread);
 
-    virtual ~ServiceThread()
-    {
-        assert((m_state == State::NoThread) && "You must stop thread before destruction!");
+		do {
+			std::lock_guard<std::mutex> lock(m_eventQueueMutex);
+			m_quit = true;
+			m_waitCondition.notify_one();
+		} while (false);
 
-        while (!m_eventQueue.empty()){
-            auto front = m_eventQueue.front();
-            delete front.eventPtr;
-            m_eventQueue.pop();
-        }
-    }
+		m_thread.join();
+		m_state = State::NoThread;
+	}
 
-    template <class T>
-    void Event(const T &event,
-               Service *servicePtr,
-               void (Service::*serviceFunction)(const T &))
-    {
-        EventDescription description;
-        description.serviceFunctionPtr =
-            reinterpret_cast<void (Service::*)(void*)>(serviceFunction);
-        description.servicePtr = servicePtr;
-        description.eventFunctionPtr = &ServiceThread::EventCall<T>;
-        description.eventPtr = new T(event);
-        {
-            std::lock_guard<std::mutex> lock(m_eventQueueMutex);
-            m_eventQueue.push(description);
-        }
-        m_waitCondition.notify_one();
-    }
+	virtual ~ServiceThread() {
+		assert((m_state == State::NoThread) && "You must stop thread before destruction!");
+
+		while (!m_eventQueue.empty()) {
+			auto front = m_eventQueue.front();
+			delete front.eventPtr;
+			m_eventQueue.pop();
+		}
+	}
+
+	template <class T>
+	void Event(const T &event,
+				Service *servicePtr,
+				void (Service::*serviceFunction)(const T &)) {
+		EventDescription description;
+		description.serviceFunctionPtr =
+			reinterpret_cast<void (Service::*)(void *)>(serviceFunction);
+		description.servicePtr = servicePtr;
+		description.eventFunctionPtr = &ServiceThread::EventCall<T>;
+		description.eventPtr = new T(event);
+
+		do {
+			std::lock_guard<std::mutex> lock(m_eventQueueMutex);
+			m_eventQueue.push(description);
+		} while (false);
+
+		m_waitCondition.notify_one();
+	}
 
 protected:
+	struct EventDescription {
+		void (Service::*serviceFunctionPtr)(void *);
+		Service *servicePtr;
+		void (ServiceThread::*eventFunctionPtr)(const EventDescription &event);
+		GenericEvent *eventPtr;
+	};
 
-    struct EventDescription {
-        void (Service::*serviceFunctionPtr)(void *);
-        Service *servicePtr;
-        void (ServiceThread::*eventFunctionPtr)(const EventDescription &event);
-        GenericEvent* eventPtr;
-    };
+	template <class T>
+	void EventCall(const EventDescription &desc) {
+		auto fun = reinterpret_cast<void (Service::*)(const T &)>(desc.serviceFunctionPtr);
+		const T &eventLocale = *(static_cast<T *>(desc.eventPtr));
+		(desc.servicePtr->*fun)(eventLocale);
+	}
 
-    template <class T>
-    void EventCall(const EventDescription &desc) {
-        auto fun = reinterpret_cast<void (Service::*)(const T&)>(desc.serviceFunctionPtr);
-        const T& eventLocale = *(static_cast<T*>(desc.eventPtr));
-        (desc.servicePtr->*fun)(eventLocale);
-    }
+	static void ThreadLoopStatic(ServiceThread *ptr) {
+		ptr->ThreadLoop();
+	}
 
-    static void ThreadLoopStatic(ServiceThread *ptr) {
-        ptr->ThreadLoop();
-    }
+	void ThreadLoop() {
+		for (;;) {
+			EventDescription description = {NULL, NULL, NULL, NULL};
+			do {
+				std::unique_lock<std::mutex> ulock(m_eventQueueMutex);
 
-    void ThreadLoop(){
-        for (;;) {
-            EventDescription description = {NULL, NULL, NULL, NULL};
-            {
-                std::unique_lock<std::mutex> ulock(m_eventQueueMutex);
-                if (m_quit)
-                    return;
-                if (!m_eventQueue.empty()) {
-                    description = m_eventQueue.front();
-                    m_eventQueue.pop();
-                } else {
-                    m_waitCondition.wait(ulock);
-                }
-            }
+				if (m_quit)
+					return;
 
-            if (description.eventPtr != NULL) {
-                UNHANDLED_EXCEPTION_HANDLER_BEGIN
-                {
-                    (this->*description.eventFunctionPtr)(description);
-                    delete description.eventPtr;
-                }
-                UNHANDLED_EXCEPTION_HANDLER_END
-            }
-        }
-    }
+				if (!m_eventQueue.empty()) {
+					description = m_eventQueue.front();
+					m_eventQueue.pop();
+				} else {
+					m_waitCondition.wait(ulock);
+				}
+			} while (false);
 
-    std::thread m_thread;
-    std::mutex m_eventQueueMutex;
-    std::queue<EventDescription> m_eventQueue;
-    std::condition_variable m_waitCondition;
+			if (description.eventPtr != NULL) {
+				UNHANDLED_EXCEPTION_HANDLER_BEGIN {
+					(this->*description.eventFunctionPtr)(description);
+					delete description.eventPtr;
+				}
+				UNHANDLED_EXCEPTION_HANDLER_END
+			}
+		}
+	}
 
-    State m_state;
-    bool m_quit;
+	std::thread m_thread;
+	std::mutex m_eventQueueMutex;
+	std::queue<EventDescription> m_eventQueue;
+	std::condition_variable m_waitCondition;
+
+	State m_state;
+	bool m_quit;
 };
 
 } // namespace AuthPasswd

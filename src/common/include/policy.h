@@ -53,13 +53,13 @@ COMMON_API
 extern const unsigned int PASSWORD_API_NO_EXPIRATION;
 
 COMMON_API
-extern const char* NO_PASSWORD;
+extern const char *NO_PASSWORD;
 
 COMMON_API
-extern const char* NO_PATTERN;
+extern const char *NO_PATTERN;
 
 COMMON_API
-extern const char* NO_FORBIDDEND_PASSWORD;
+extern const char *NO_FORBIDDEND_PASSWORD;
 
 
 COMMON_API
@@ -78,55 +78,53 @@ COMMON_API
 extern const std::string REGEX_QUALITY_ALPHANUMERIC;
 
 struct COMMON_API Policy {
-    Policy();
-    ~Policy();
+	Policy();
+	~Policy();
 
-    std::string info(void) const;
+	std::string info(void) const;
 
-    inline void setFlag(password_policy_type field)
-    {
-        flag |= (1 << field);
-    }
+	inline void setFlag(password_policy_type field) {
+		flag |= (1 << field);
+	}
 
-    inline bool isFlagOn(password_policy_type field)
-    {
-        return (flag & (1 << field)) ? true : false;
-    }
+	inline bool isFlagOn(password_policy_type field) {
+		return (flag & (1 << field)) ? true : false;
+	}
 
-    // XOR-ed value of password_policy_type enum
-    int flag;
+	// XOR-ed value of password_policy_type enum
+	int flag;
 
-    uid_t uid;
+	uid_t uid;
 
-    // maximum number of attempts that user can try to check the password without success in serial
-    unsigned int maxAttempts;
-    // number of days that this password is valid
-    unsigned int validPeriod;
-    // recent number of passwords which user cannot reuse
-    unsigned int historySize;
-    // a min number of characters of password
-    unsigned int minLength;
-    // a min number of complex chars(non-alphabetic) in password
-    unsigned int minComplexCharNumber;
-    // Maximum count of the same character in the password
-    unsigned int maxCharOccurrences;
-    // Maximum numeric sequence length in the password
-    // regardless descending order, ascending order or repetition
-    unsigned int maxNumSeqLength;
-    // password quality
-    unsigned int qualityType;
+	// maximum number of attempts that user can try to check the password without success in serial
+	unsigned int maxAttempts;
+	// number of days that this password is valid
+	unsigned int validPeriod;
+	// recent number of passwords which user cannot reuse
+	unsigned int historySize;
+	// a min number of characters of password
+	unsigned int minLength;
+	// a min number of complex chars(non-alphabetic) in password
+	unsigned int minComplexCharNumber;
+	// Maximum count of the same character in the password
+	unsigned int maxCharOccurrences;
+	// Maximum numeric sequence length in the password
+	// regardless descending order, ascending order or repetition
+	unsigned int maxNumSeqLength;
+	// password quality
+	unsigned int qualityType;
 
-    // password regular expression
-    std::string pattern;
+	// password regular expression
+	std::string pattern;
 
-    // forbidden strings in password
-    std::set<std::string> forbiddenPasswds;
+	// forbidden strings in password
+	std::set<std::string> forbiddenPasswds;
 };
 
 struct COMMON_API PolicySerializable : public Policy, ISerializable {
-    explicit PolicySerializable(const Policy &);
-    explicit PolicySerializable(IStream &);
-    void Serialize(IStream &) const;
+	explicit PolicySerializable(const Policy &);
+	explicit PolicySerializable(IStream &);
+	void Serialize(IStream &) const;
 };
 
 }

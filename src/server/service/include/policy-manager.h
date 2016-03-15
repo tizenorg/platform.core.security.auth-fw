@@ -32,33 +32,31 @@
 
 #include <policy-file.h>
 
-namespace AuthPasswd
-{
-    class PolicyManager
-    {
-    public:
-        typedef std::map<unsigned int, PolicyFile> PolicyFileMap;
+namespace AuthPasswd {
+class PolicyManager {
+public:
+	typedef std::map<unsigned int, PolicyFile> PolicyFileMap;
 
-        // policy checking functions
-        int checkPolicy(unsigned int passwdType,
-                        const std::string &currentPassword,
-                        const std::string &newPassword,
-                        unsigned int user);
+	// policy checking functions
+	int checkPolicy(unsigned int passwdType,
+					const std::string &currentPassword,
+					const std::string &newPassword,
+					unsigned int user);
 
-        // policy setting functions
-        int setPolicy(Policy policy);
+	// policy setting functions
+	int setPolicy(Policy policy);
 
-        // policy disabling functions
-        int disablePolicy(unsigned int user);
+	// policy disabling functions
+	int disablePolicy(unsigned int user);
 
-    private:
-        // managing functions
-        void addPolicy(unsigned int user);
-        void removePolicy(unsigned int user);
-        void existPolicy(unsigned int user);
+private:
+	// managing functions
+	void addPolicy(unsigned int user);
+	void removePolicy(unsigned int user);
+	void existPolicy(unsigned int user);
 
-        PolicyFileMap m_policyFile;
-    };
+	PolicyFileMap m_policyFile;
+};
 } //namespace AuthPasswd
 
 #endif

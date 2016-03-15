@@ -35,241 +35,252 @@
 #include <auth-passwd-policy-types.h>
 #include <auth-passwd-error.h>
 
-namespace AuthPasswd
+namespace AuthPasswd {
+void PolicyManager::addPolicy(unsigned int user)
 {
-    void PolicyManager::addPolicy(unsigned int user)
-    {
-        m_policyFile.insert(PolicyFileMap::value_type(user, PolicyFile(user)));
-    }
+	m_policyFile.insert(PolicyFileMap::value_type(user, PolicyFile(user)));
+}
 
-    void PolicyManager::removePolicy(unsigned int user)
-    {
-        m_policyFile.erase(user);
-    }
+void PolicyManager::removePolicy(unsigned int user)
+{
+	m_policyFile.erase(user);
+}
 
-    void PolicyManager::existPolicy(unsigned int user)
-    {
-        PolicyFileMap::iterator itPwd = m_policyFile.find(user);
-        if (itPwd != m_policyFile.end())
-            return;
+void PolicyManager::existPolicy(unsigned int user)
+{
+	PolicyFileMap::iterator itPwd = m_policyFile.find(user);
 
-        addPolicy(user);
-        return;
-    }
+	if (itPwd != m_policyFile.end())
+		return;
 
-    int PolicyManager::checkPolicy(unsigned int passwdType,
-                                   const std::string &currentPassword,
-                                   const std::string &newPassword,
-                                   unsigned int user)
-    {
-        LogSecureDebug("Inside checkPolicy function.");
+	addPolicy(user);
+	return;
+}
 
-        // check if passwords are correct
-        if (currentPassword.size() > MAX_PASSWORD_LEN) {
-            LogError("Current password length failed.");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
-        if (newPassword.size() > MAX_PASSWORD_LEN) {
-            LogError("New password length failed.");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+int PolicyManager::checkPolicy(unsigned int passwdType,
+							   const std::string &currentPassword,
+							   const std::string &newPassword,
+							   unsigned int user)
+{
+	LogSecureDebug("Inside checkPolicy function.");
 
-        existPolicy(user);
-        PolicyFileMap::iterator itPolicy = m_policyFile.find(user);
+	// check if passwords are correct
+	if (currentPassword.size() > MAX_PASSWORD_LEN) {
+		LogError("Current password length failed.");
+		return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+	}
 
-        if (!itPolicy->second.isPolicyActive() || (passwdType != AUTH_PWD_NORMAL))
-            return AUTH_PASSWD_API_SUCCESS;
+	if (newPassword.size() > MAX_PASSWORD_LEN) {
+		LogError("New password length failed.");
+		return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+	}
 
-        if (!itPolicy->second.checkMinLength(newPassword)) {
-            LogError("new passwd's minLength is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkMinComplexCharNumber(newPassword)) {
-            LogError("new passwd's minComplexCharNumber is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkMaxCharOccurrences(newPassword)) {
-            LogError("new passwd's maxCharOccurrences is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkMaxNumSeqLength(newPassword)) {
-            LogError("new passwd's maxNumSeqLength is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkQualityType(newPassword)) {
-            LogError("new passwd's qualityType is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkPattern(newPassword)) {
-            LogError("new passwd's pattern is invalid");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
-        if (!itPolicy->second.checkForbiddenPasswds(newPassword)) {
-            LogError("new passwd is forbiddenPasswd");
-            return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
-        }
+	existPolicy(user);
+	PolicyFileMap::iterator itPolicy = m_policyFile.find(user);
 
-        return AUTH_PASSWD_API_SUCCESS;
-    }
+	if (!itPolicy->second.isPolicyActive() || (passwdType != AUTH_PWD_NORMAL))
+		return AUTH_PASSWD_API_SUCCESS;
 
-    int PolicyManager::setPolicy(Policy policy)
-    {
-        LogSecureDebug("Inside setPolicy function.");
+	if (!itPolicy->second.checkMinLength(newPassword)) {
+		LogError("new passwd's minLength is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-        existPolicy(policy.uid);
-        PolicyFileMap::iterator itPolicy = m_policyFile.find(policy.uid);
+	if (!itPolicy->second.checkMinComplexCharNumber(newPassword)) {
+		LogError("new passwd's minComplexCharNumber is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-        // check if policies are correct
-        for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST+1 ; i++) {
-            if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
-                continue;
+	if (!itPolicy->second.checkMaxCharOccurrences(newPassword)) {
+		LogError("new passwd's maxCharOccurrences is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-            switch (i) {
-                case POLICY_MAX_ATTEMPTS:
-                    break;
+	if (!itPolicy->second.checkMaxNumSeqLength(newPassword)) {
+		LogError("new passwd's maxNumSeqLength is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-                case POLICY_VALID_PERIOD: {
-                    time_t curTime = time(NULL);
-                    if (policy.validPeriod > ((UINT_MAX - curTime) / 86400)) {
-                       LogError("Incorrect input param.");
-                       return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
-                }
+	if (!itPolicy->second.checkQualityType(newPassword)) {
+		LogError("new passwd's qualityType is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-                case POLICY_HISTORY_SIZE:
-                    if (policy.historySize > MAX_PASSWORD_HISTORY) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+	if (!itPolicy->second.checkPattern(newPassword)) {
+		LogError("new passwd's pattern is invalid");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-                case POLICY_MIN_LENGTH:
-                    if (policy.minLength > MAX_PASSWORD_LEN) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+	if (!itPolicy->second.checkForbiddenPasswds(newPassword)) {
+		LogError("new passwd is forbiddenPasswd");
+		return AUTH_PASSWD_API_ERROR_PASSWORD_INVALID;
+	}
 
-                case POLICY_MIN_COMPLEX_CHAR_NUMBER:
-                    if (policy.minComplexCharNumber > MAX_PASSWORD_LEN) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+	return AUTH_PASSWD_API_SUCCESS;
+}
 
-                case POLICY_MAX_CHAR_OCCURRENCES:
-                    if (policy.maxCharOccurrences > MAX_PASSWORD_LEN) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+int PolicyManager::setPolicy(Policy policy)
+{
+	LogSecureDebug("Inside setPolicy function.");
+	existPolicy(policy.uid);
+	PolicyFileMap::iterator itPolicy = m_policyFile.find(policy.uid);
 
-                case POLICY_MAX_NUMERIC_SEQ_LENGTH:
-                    if (policy.maxNumSeqLength > MAX_PASSWORD_LEN) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+	// check if policies are correct
+	for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST + 1 ; i++) {
+		if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
+			continue;
 
-                case POLICY_QUALITY_TYPE:
-                    if (policy.qualityType > AUTH_PWD_QUALITY_LAST) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+		switch (i) {
+		case POLICY_MAX_ATTEMPTS:
+			break;
 
-                case POLICY_PATTERN:
-                    if (!itPolicy->second.isValidPattern(policy.pattern)) {
-                        LogError("Incorrect input param.");
-                        return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-                    }
-                    break;
+		case POLICY_VALID_PERIOD: {
+			time_t curTime = time(NULL);
 
-                case POLICY_FORBIDDEN_PASSWDS:
-                    break;
+			if (policy.validPeriod > ((UINT_MAX - curTime) / 86400)) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                default:
-                    LogError("Not supported policy type.");
-                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-            }
-        }
+			break;
+		}
 
-        // update policies
-        for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST+1 ; i++) {
-            if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
-                continue;
+		case POLICY_HISTORY_SIZE:
+			if (policy.historySize > MAX_PASSWORD_HISTORY) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-            switch (i) {
-                case POLICY_MAX_ATTEMPTS:
-                    LogSecureDebug("maxAttempts: " << policy.maxAttempts);
-                    break;
+			break;
 
-                case POLICY_VALID_PERIOD:
-                    LogSecureDebug("validPeriod: " << policy.validPeriod);
-                    break;
+		case POLICY_MIN_LENGTH:
+			if (policy.minLength > MAX_PASSWORD_LEN) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                case POLICY_HISTORY_SIZE:
-                    LogSecureDebug("historySize: " << policy.historySize);
-                    break;
+			break;
 
-                case POLICY_MIN_LENGTH:
-                    LogSecureDebug("minLength: " << policy.minLength);
-                    itPolicy->second.setMinLength(policy.minLength);
-                    break;
+		case POLICY_MIN_COMPLEX_CHAR_NUMBER:
+			if (policy.minComplexCharNumber > MAX_PASSWORD_LEN) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                case POLICY_MIN_COMPLEX_CHAR_NUMBER:
-                    LogSecureDebug("minComplexCharNumber: " << policy.minComplexCharNumber);
-                    itPolicy->second.setMinComplexCharNumber(policy.minComplexCharNumber);
-                    break;
+			break;
 
-                case POLICY_MAX_CHAR_OCCURRENCES:
-                    LogSecureDebug("maxCharOccurrences: " << policy.maxCharOccurrences);
-                    itPolicy->second.setMaxCharOccurrences(policy.maxCharOccurrences);
-                    break;
+		case POLICY_MAX_CHAR_OCCURRENCES:
+			if (policy.maxCharOccurrences > MAX_PASSWORD_LEN) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                case POLICY_MAX_NUMERIC_SEQ_LENGTH:
-                    LogSecureDebug("maxNumSeqLength: " << policy.maxNumSeqLength);
-                    itPolicy->second.setMaxNumSeqLength(policy.maxNumSeqLength);
-                    break;
+			break;
 
-                case POLICY_QUALITY_TYPE:
-                    LogSecureDebug("qualityType: " << policy.qualityType);
-                    itPolicy->second.setQualityType(policy.qualityType);
-                    break;
+		case POLICY_MAX_NUMERIC_SEQ_LENGTH:
+			if (policy.maxNumSeqLength > MAX_PASSWORD_LEN) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                case POLICY_PATTERN:
-                    LogSecureDebug("pattern: " << policy.pattern);
-                    itPolicy->second.setPattern(policy.pattern);
-                    break;
+			break;
 
-                case POLICY_FORBIDDEN_PASSWDS:
-                    LogSecureDebug("forbiddenPasswds number: " << policy.forbiddenPasswds.size());
-                    itPolicy->second.setForbiddenPasswds(policy.forbiddenPasswds);
-                    break;
+		case POLICY_QUALITY_TYPE:
+			if (policy.qualityType > AUTH_PWD_QUALITY_LAST) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-                default:
-                    LogError("Not supported policy type.");
-                    return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-            }
-        }
+			break;
 
-        itPolicy->second.enable();
-        itPolicy->second.writeMemoryToFile();
+		case POLICY_PATTERN:
+			if (!itPolicy->second.isValidPattern(policy.pattern)) {
+				LogError("Incorrect input param.");
+				return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+			}
 
-        return AUTH_PASSWD_API_SUCCESS;
-    }
+			break;
 
-    int PolicyManager::disablePolicy(unsigned int user)
-    {
-        LogSecureDebug("Inside disablePolicy function.");
+		case POLICY_FORBIDDEN_PASSWDS:
+			break;
 
-        existPolicy(user);
-        PolicyFileMap::iterator itPolicy = m_policyFile.find(user);
+		default:
+			LogError("Not supported policy type.");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
+	}
 
-        itPolicy->second.disable();
-        itPolicy->second.writeMemoryToFile();
+	// update policies
+	for (int i = POLICY_TYPE_FIRST ; i < POLICY_TYPE_LAST + 1 ; i++) {
+		if (!policy.isFlagOn(static_cast<password_policy_type>(i)))
+			continue;
 
-        return AUTH_PASSWD_API_SUCCESS;
-    }
+		switch (i) {
+		case POLICY_MAX_ATTEMPTS:
+			LogSecureDebug("maxAttempts: " << policy.maxAttempts);
+			break;
+
+		case POLICY_VALID_PERIOD:
+			LogSecureDebug("validPeriod: " << policy.validPeriod);
+			break;
+
+		case POLICY_HISTORY_SIZE:
+			LogSecureDebug("historySize: " << policy.historySize);
+			break;
+
+		case POLICY_MIN_LENGTH:
+			LogSecureDebug("minLength: " << policy.minLength);
+			itPolicy->second.setMinLength(policy.minLength);
+			break;
+
+		case POLICY_MIN_COMPLEX_CHAR_NUMBER:
+			LogSecureDebug("minComplexCharNumber: " << policy.minComplexCharNumber);
+			itPolicy->second.setMinComplexCharNumber(policy.minComplexCharNumber);
+			break;
+
+		case POLICY_MAX_CHAR_OCCURRENCES:
+			LogSecureDebug("maxCharOccurrences: " << policy.maxCharOccurrences);
+			itPolicy->second.setMaxCharOccurrences(policy.maxCharOccurrences);
+			break;
+
+		case POLICY_MAX_NUMERIC_SEQ_LENGTH:
+			LogSecureDebug("maxNumSeqLength: " << policy.maxNumSeqLength);
+			itPolicy->second.setMaxNumSeqLength(policy.maxNumSeqLength);
+			break;
+
+		case POLICY_QUALITY_TYPE:
+			LogSecureDebug("qualityType: " << policy.qualityType);
+			itPolicy->second.setQualityType(policy.qualityType);
+			break;
+
+		case POLICY_PATTERN:
+			LogSecureDebug("pattern: " << policy.pattern);
+			itPolicy->second.setPattern(policy.pattern);
+			break;
+
+		case POLICY_FORBIDDEN_PASSWDS:
+			LogSecureDebug("forbiddenPasswds number: " << policy.forbiddenPasswds.size());
+			itPolicy->second.setForbiddenPasswds(policy.forbiddenPasswds);
+			break;
+
+		default:
+			LogError("Not supported policy type.");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
+	}
+
+	itPolicy->second.enable();
+	itPolicy->second.writeMemoryToFile();
+	return AUTH_PASSWD_API_SUCCESS;
+}
+
+int PolicyManager::disablePolicy(unsigned int user)
+{
+	LogSecureDebug("Inside disablePolicy function.");
+	existPolicy(user);
+	PolicyFileMap::iterator itPolicy = m_policyFile.find(user);
+	itPolicy->second.disable();
+	itPolicy->second.writeMemoryToFile();
+	return AUTH_PASSWD_API_SUCCESS;
+}
 } //namespace AuthPasswd

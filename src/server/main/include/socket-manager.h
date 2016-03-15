@@ -39,95 +39,97 @@ namespace AuthPasswd {
 
 class SocketManager : public GenericSocketManager {
 public:
-    class Exception {
-    public:
-        DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
-        DECLARE_EXCEPTION_TYPE(Base, InitFailed)
-    };
-    SocketManager();
-    virtual ~SocketManager();
-    virtual void MainLoop();
-    virtual void MainLoopStop();
+	class Exception {
+	public:
+		DECLARE_EXCEPTION_TYPE(AuthPasswd::Exception, Base)
+		DECLARE_EXCEPTION_TYPE(Base, InitFailed)
+	};
+	SocketManager();
+	virtual ~SocketManager();
+	virtual void MainLoop();
+	virtual void MainLoopStop();
 
-    virtual void RegisterSocketService(GenericSocketService *service);
-    virtual void Close(ConnectionID connectionID);
-    virtual void Write(ConnectionID connectionID, const RawBuffer &rawBuffer);
-    virtual void Write(ConnectionID connectionID, const SendMsgData &sendMsgData);
+	virtual void RegisterSocketService(GenericSocketService *service);
+	virtual void Close(ConnectionID connectionID);
+	virtual void Write(ConnectionID connectionID, const RawBuffer &rawBuffer);
+	virtual void Write(ConnectionID connectionID, const SendMsgData &sendMsgData);
 
 protected:
-    void CreateDomainSocket(
-        GenericSocketService *service,
-        const GenericSocketService::ServiceDescription &desc);
-    int CreateDomainSocketHelp(
-        const GenericSocketService::ServiceDescription &desc);
-    int GetSocketFromSystemD(
-        const GenericSocketService::ServiceDescription &desc);
+	void CreateDomainSocket(
+		GenericSocketService *service,
+		const GenericSocketService::ServiceDescription &desc);
+	int CreateDomainSocketHelp(
+		const GenericSocketService::ServiceDescription &desc);
+	int GetSocketFromSystemD(
+		const GenericSocketService::ServiceDescription &desc);
 
-    void ReadyForRead(int sock);
-    void ReadyForWrite(int sock);
-    void ReadyForWriteBuffer(int sock);
-    void ReadyForSendMsg(int sock);
-    void ReadyForAccept(int sock);
-    void ProcessQueue(void);
-    void NotifyMe(void);
-    void CloseSocket(int sock);
+	void ReadyForRead(int sock);
+	void ReadyForWrite(int sock);
+	void ReadyForWriteBuffer(int sock);
+	void ReadyForSendMsg(int sock);
+	void ReadyForAccept(int sock);
+	void ProcessQueue(void);
+	void NotifyMe(void);
+	void CloseSocket(int sock);
 
-    struct SocketDescription {
-        bool isListen;
-        bool isOpen;
-        bool isTimeout;
-        bool useSendMsg;
-        InterfaceID interfaceID;
-        GenericSocketService *service;
-        time_t timeout;
-        RawBuffer rawBuffer;
-        std::queue<SendMsgData> sendMsgDataQueue;
-        int counter;
+	struct SocketDescription {
+		bool isListen;
+		bool isOpen;
+		bool isTimeout;
+		bool useSendMsg;
+		InterfaceID interfaceID;
+		GenericSocketService *service;
+		time_t timeout;
+		RawBuffer rawBuffer;
+		std::queue<SendMsgData> sendMsgDataQueue;
+		int counter;
 
-        SocketDescription()
-          : isListen(false)
-          , isOpen(false)
-          , isTimeout(false)
-          , useSendMsg(false)
-          , interfaceID(-1)
-          , service(NULL)
-        {}
-    };
+		SocketDescription()
+			: isListen(false)
+			, isOpen(false)
+			, isTimeout(false)
+			, useSendMsg(false)
+			, interfaceID(-1)
+			, service(NULL)
+		{}
+	};
 
-    SocketDescription& CreateDefaultReadSocketDescription(int sock, bool timeout, InterfaceID ifaceID = 0, GenericSocketService *service = NULL);
+	SocketDescription &CreateDefaultReadSocketDescription(int sock, bool timeout,
+			InterfaceID ifaceID = 0, GenericSocketService *service = NULL);
 
-    typedef std::vector<SocketDescription> SocketDescriptionVector;
+	typedef std::vector<SocketDescription> SocketDescriptionVector;
 
-    struct WriteBuffer {
-        ConnectionID connectionID;
-        RawBuffer rawBuffer;
-    };
+	struct WriteBuffer {
+		ConnectionID connectionID;
+		RawBuffer rawBuffer;
+	};
 
-    struct WriteData {
-        ConnectionID connectionID;
-        SendMsgData sendMsgData;
-    };
+	struct WriteData {
+		ConnectionID connectionID;
+		SendMsgData sendMsgData;
+	};
 
-    struct Timeout {
-        time_t time;
-        int sock;
-        bool operator<(const Timeout &second) const {
-            return time > second.time; // mininum first!
-        }
-    };
+	struct Timeout {
+		time_t time;
+		int sock;
+		bool operator<(const Timeout &second) const
+		{
+			return time > second.time; // mininum first!
+		}
+	};
 
-    SocketDescriptionVector m_socketDescriptionVector;
-    fd_set m_readSet;
-    fd_set m_writeSet;
-    int m_maxDesc;
-    bool m_working;
-    std::mutex m_eventQueueMutex;
-    std::queue<WriteBuffer> m_writeBufferQueue;
-    std::queue<WriteData> m_writeDataQueue;
-    std::queue<ConnectionID> m_closeQueue;
-    int m_notifyMe[2];
-    int m_counter;
-    std::priority_queue<Timeout> m_timeoutQueue;
+	SocketDescriptionVector m_socketDescriptionVector;
+	fd_set m_readSet;
+	fd_set m_writeSet;
+	int m_maxDesc;
+	bool m_working;
+	std::mutex m_eventQueueMutex;
+	std::queue<WriteBuffer> m_writeBufferQueue;
+	std::queue<WriteData> m_writeDataQueue;
+	std::queue<ConnectionID> m_closeQueue;
+	int m_notifyMe[2];
+	int m_counter;
+	std::priority_queue<Timeout> m_timeoutQueue;
 };
 
 } // namespace AuthPasswd

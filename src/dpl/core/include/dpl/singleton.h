@@ -25,26 +25,23 @@
 namespace AuthPasswd {
 template<typename Class>
 class Singleton :
-    private Class
-{
-    //
-    // Note:
-    //
-    // To remove posibility of instantiating directly Class,
-    // make Class' default constructor protected
-    //
+	private Class {
+	//
+	// Note:
+	//
+	// To remove posibility of instantiating directly Class,
+	// make Class' default constructor protected
+	//
 
-  private:
-    Singleton()
-    {}
+private:
+	Singleton() {}
 
-    static Singleton &InternalInstance();
+	static Singleton &InternalInstance();
 
-  public:
-    virtual ~Singleton()
-    {}
+public:
+	virtual ~Singleton() {}
 
-    static Class &Instance();
+	static Class &Instance();
 };
 } // namespace AuthPasswd
 

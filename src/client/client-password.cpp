@@ -39,219 +39,214 @@
 
 namespace {
 
-inline bool isPasswordIncorrect(const char* passwd)
+inline bool isPasswordIncorrect(const char *passwd)
 {
-    // NULL means that password must be cancelled.
-    return (passwd && (strlen(passwd) == 0 || strlen(passwd) > AuthPasswd::MAX_PASSWORD_LEN));
+	// NULL means that password must be cancelled.
+	return (passwd && (strlen(passwd) == 0 || strlen(passwd) > AuthPasswd::MAX_PASSWORD_LEN));
 }
 
 } // namespace anonymous
 
 AUTH_PASSWD_API
 int auth_passwd_check_passwd(password_type passwd_type,
-                             const char *passwd,
-                             unsigned int *current_attempts,
-                             unsigned int *max_attempts,
-                             unsigned int *valid_secs)
+							 const char *passwd,
+							 unsigned int *current_attempts,
+							 unsigned int *max_attempts,
+							 unsigned int *valid_secs)
 {
-    using namespace AuthPasswd;
+	using namespace AuthPasswd;
+	return try_catch([&] {
+		if (isPasswordIncorrect(passwd) ||
+		current_attempts == NULL || max_attempts == NULL || valid_secs == NULL) {
+			LogError("Wrong input param");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
 
-    return try_catch([&] {
-        if (isPasswordIncorrect(passwd) ||
-            current_attempts == NULL || max_attempts == NULL || valid_secs == NULL) {
-            LogError("Wrong input param");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+		if (!passwd)
+			passwd = NO_PASSWORD;
 
-        if (!passwd) {
-            passwd = NO_PASSWORD;
-        }
+		MessageBuffer send, recv;
 
-        MessageBuffer send, recv;
+		*current_attempts = 0;
+		*max_attempts = 0;
+		*valid_secs = 0;
 
-        *current_attempts = 0;
-        *max_attempts = 0;
-        *valid_secs = 0;
+		Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD));
+		Serialization::Serialize(send, passwd_type);
 
-        Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD));
-        Serialization::Serialize(send, passwd_type);
+		//Clear pwd memory
+		std::string passwd_str(passwd);
+		Serialization::Serialize(send, passwd_str);
+		passwd_str.clear();
 
-        //Clear pwd memory
-        std::string passwd_str(passwd);
-        Serialization::Serialize(send, passwd_str);
-        passwd_str.clear();
+		int retCode = sendToServer(SERVICE_SOCKET_PASSWD_CHECK, send.Pop(), recv);
 
-        int retCode = sendToServer(SERVICE_SOCKET_PASSWD_CHECK, send.Pop(), recv);
-        if (AUTH_PASSWD_API_SUCCESS != retCode) {
-            LogDebug("Error in sendToServer. Error code: " << retCode);
-            return retCode;
-        }
+		if (AUTH_PASSWD_API_SUCCESS != retCode) {
+			LogDebug("Error in sendToServer. Error code: " << retCode);
+			return retCode;
+		}
 
-        Deserialization::Deserialize(recv, retCode);
+		Deserialization::Deserialize(recv, retCode);
 
-        switch (retCode) {
-        case AUTH_PASSWD_API_ERROR_PASSWORD_MISMATCH:
-        case AUTH_PASSWD_API_ERROR_PASSWORD_MAX_ATTEMPTS_EXCEEDED:
-        case AUTH_PASSWD_API_ERROR_PASSWORD_EXPIRED:
-        case AUTH_PASSWD_API_SUCCESS:
-            Deserialization::Deserialize(recv, *current_attempts);
-            Deserialization::Deserialize(recv, *max_attempts);
-            Deserialization::Deserialize(recv, *valid_secs);
-            break;
-        default:
-            break;
-        }
+		switch (retCode) {
+		case AUTH_PASSWD_API_ERROR_PASSWORD_MISMATCH:
+		case AUTH_PASSWD_API_ERROR_PASSWORD_MAX_ATTEMPTS_EXCEEDED:
+		case AUTH_PASSWD_API_ERROR_PASSWORD_EXPIRED:
+		case AUTH_PASSWD_API_SUCCESS:
+			Deserialization::Deserialize(recv, *current_attempts);
+			Deserialization::Deserialize(recv, *max_attempts);
+			Deserialization::Deserialize(recv, *valid_secs);
+			break;
 
-        return retCode;
-    });
+		default:
+			break;
+		}
+
+		return retCode;
+	});
 }
 
 AUTH_PASSWD_API
 int auth_passwd_check_passwd_state(password_type passwd_type,
-                                   unsigned int *current_attempts,
-                                   unsigned int *max_attempts,
-                                   unsigned int *valid_secs)
+								   unsigned int *current_attempts,
+								   unsigned int *max_attempts,
+								   unsigned int *valid_secs)
 {
-    using namespace AuthPasswd;
+	using namespace AuthPasswd;
+	return try_catch([&] {
+		if (NULL == current_attempts || NULL == max_attempts ||
+		NULL == valid_secs) {
+			LogError("Wrong input param");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
 
-    return try_catch([&] {
-        if (NULL == current_attempts || NULL == max_attempts ||
-            NULL == valid_secs) {
+		MessageBuffer send, recv;
 
-            LogError("Wrong input param");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+		*current_attempts = 0;
+		*max_attempts = 0;
+		*valid_secs = 0;
 
-        MessageBuffer send, recv;
+		Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD_STATE));
+		Serialization::Serialize(send, passwd_type);
 
-        *current_attempts = 0;
-        *max_attempts = 0;
-        *valid_secs = 0;
+		int retCode = sendToServer(SERVICE_SOCKET_PASSWD_CHECK, send.Pop(), recv);
 
-        Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD_STATE));
-        Serialization::Serialize(send, passwd_type);
+		if (AUTH_PASSWD_API_SUCCESS != retCode) {
+			LogDebug("Error in sendToServer. Error code: " << retCode);
+			return retCode;
+		}
 
-        int retCode = sendToServer(SERVICE_SOCKET_PASSWD_CHECK, send.Pop(), recv);
-        if (AUTH_PASSWD_API_SUCCESS != retCode) {
-            LogDebug("Error in sendToServer. Error code: " << retCode);
-            return retCode;
-        }
+		Deserialization::Deserialize(recv, retCode);
 
-        Deserialization::Deserialize(recv, retCode);
+		if (retCode == AUTH_PASSWD_API_SUCCESS) {
+			Deserialization::Deserialize(recv, *current_attempts);
+			Deserialization::Deserialize(recv, *max_attempts);
+			Deserialization::Deserialize(recv, *valid_secs);
+		}
 
-        if(retCode == AUTH_PASSWD_API_SUCCESS) {
-            Deserialization::Deserialize(recv, *current_attempts);
-            Deserialization::Deserialize(recv, *max_attempts);
-            Deserialization::Deserialize(recv, *valid_secs);
-        }
-
-        return retCode;
-    });
+		return retCode;
+	});
 }
 
 AUTH_PASSWD_API
-int auth_passwd_check_passwd_reused(password_type passwd_type, 
-                                    const char *passwd,
-                                    int *is_reused)
+int auth_passwd_check_passwd_reused(password_type passwd_type,
+									const char *passwd,
+									int *is_reused)
 {
-    using namespace AuthPasswd;
+	using namespace AuthPasswd;
+	return try_catch([&] {
+		if (NULL == passwd || NULL == is_reused) {
+			LogError("Wrong input param");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
 
-    return try_catch([&] {
-        if (NULL == passwd || NULL == is_reused) {
-            LogError("Wrong input param");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+		MessageBuffer send, recv;
 
-        MessageBuffer send, recv;
+		Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD_REUSED));
+		Serialization::Serialize(send, passwd_type);
+		Serialization::Serialize(send, std::string(passwd));
 
-        Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_CHK_PASSWD_REUSED));
-        Serialization::Serialize(send, passwd_type);
-        Serialization::Serialize(send, std::string(passwd));
+		int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
 
-        int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
-        if (AUTH_PASSWD_API_SUCCESS != retCode) {
-            LogDebug("Error in sendToServer. Error code: " << retCode);
-            return retCode;
-        }
+		if (AUTH_PASSWD_API_SUCCESS != retCode) {
+			LogDebug("Error in sendToServer. Error code: " << retCode);
+			return retCode;
+		}
 
-        Deserialization::Deserialize(recv, retCode);
+		Deserialization::Deserialize(recv, retCode);
 
-        if (AUTH_PASSWD_API_SUCCESS == retCode) {
-            Deserialization::Deserialize(recv, *is_reused);
-        }
+		if (AUTH_PASSWD_API_SUCCESS == retCode)
+			Deserialization::Deserialize(recv, *is_reused);
 
-        return retCode;
-    });
+		return retCode;
+	});
 }
 
 AUTH_PASSWD_API
 int auth_passwd_set_passwd(password_type passwd_type,
-                           const char *cur_passwd,
-                           const char *new_passwd)
+						   const char *cur_passwd,
+						   const char *new_passwd)
 {
-    using namespace AuthPasswd;
+	using namespace AuthPasswd;
+	return try_catch([&] {
+		if (!cur_passwd)
+			cur_passwd = NO_PASSWORD;
 
-    return try_catch([&] {
-        if (!cur_passwd) {
-            cur_passwd = NO_PASSWORD;
-        }
+		if (isPasswordIncorrect(new_passwd) || strlen(cur_passwd) > MAX_PASSWORD_LEN) {
+			LogError("Wrong input param.");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
 
-        if (isPasswordIncorrect(new_passwd) || strlen(cur_passwd) > MAX_PASSWORD_LEN) {
-            LogError("Wrong input param.");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+		if (!new_passwd)
+			new_passwd = NO_PASSWORD;
 
-        if (!new_passwd) {
-            new_passwd = NO_PASSWORD;
-        }
+		MessageBuffer send, recv;
 
-        MessageBuffer send, recv;
+		Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD));
+		Serialization::Serialize(send, passwd_type);
+		Serialization::Serialize(send, std::string(cur_passwd));
+		Serialization::Serialize(send, std::string(new_passwd));
 
-        Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD));
-        Serialization::Serialize(send, passwd_type);
-        Serialization::Serialize(send, std::string(cur_passwd));
-        Serialization::Serialize(send, std::string(new_passwd));
+		int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
 
-        int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
-        if (AUTH_PASSWD_API_SUCCESS != retCode) {
-            LogError("Error in sendToServer. Error code: " << retCode);
-            return retCode;
-        }
+		if (AUTH_PASSWD_API_SUCCESS != retCode) {
+			LogError("Error in sendToServer. Error code: " << retCode);
+			return retCode;
+		}
 
-        Deserialization::Deserialize(recv, retCode);
+		Deserialization::Deserialize(recv, retCode);
 
-        return retCode;
-    });
+		return retCode;
+	});
 }
 
 AUTH_PASSWD_API
 int auth_passwd_set_passwd_recovery(const char *cur_recovery_passwd,
-                                    const char *new_normal_passwd)
+									const char *new_normal_passwd)
 {
-    using namespace AuthPasswd;
+	using namespace AuthPasswd;
+	return try_catch([&] {
+		if (!new_normal_passwd || isPasswordIncorrect(new_normal_passwd) ||
+		!cur_recovery_passwd || isPasswordIncorrect(cur_recovery_passwd)) {
+			LogError("Wrong input param.");
+			return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
+		}
 
-    return try_catch([&] {
-        if (!new_normal_passwd || isPasswordIncorrect(new_normal_passwd) ||
-            !cur_recovery_passwd || isPasswordIncorrect(cur_recovery_passwd)) {
+		MessageBuffer send, recv;
 
-            LogError("Wrong input param.");
-            return AUTH_PASSWD_API_ERROR_INPUT_PARAM;
-        }
+		Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD_RECOVERY));
+		Serialization::Serialize(send, std::string(cur_recovery_passwd));
+		Serialization::Serialize(send, std::string(new_normal_passwd));
 
-        MessageBuffer send, recv;
+		int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
 
-        Serialization::Serialize(send, static_cast<int>(PasswordHdrs::HDR_SET_PASSWD_RECOVERY));
-        Serialization::Serialize(send, std::string(cur_recovery_passwd));
-        Serialization::Serialize(send, std::string(new_normal_passwd));
+		if (AUTH_PASSWD_API_SUCCESS != retCode) {
+			LogError("Error in sendToServer. Error code: " << retCode);
+			return retCode;
+		}
 
-        int retCode = sendToServer(SERVICE_SOCKET_PASSWD_SET, send.Pop(), recv);
-        if (AUTH_PASSWD_API_SUCCESS != retCode) {
-            LogError("Error in sendToServer. Error code: " << retCode);
-            return retCode;
-        }
+		Deserialization::Deserialize(recv, retCode);
 
-        Deserialization::Deserialize(recv, retCode);
-
-        return retCode;
-    });
+		return retCode;
+	});
 }

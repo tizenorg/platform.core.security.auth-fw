@@ -39,104 +39,104 @@ namespace Log {
  */
 class COMMON_API LogSystem : private Noncopyable {
 private:
-    typedef std::list<AbstractLogProvider *> AbstractLogProviderPtrList;
-    AbstractLogProviderPtrList m_providers;
+	typedef std::list<AbstractLogProvider *> AbstractLogProviderPtrList;
+	AbstractLogProviderPtrList m_providers;
 
-    bool m_isLoggingEnabled;
+	bool m_isLoggingEnabled;
 
 public:
-    bool IsLoggingEnabled() const;
-    LogSystem();
-    virtual ~LogSystem();
+	bool IsLoggingEnabled() const;
+	LogSystem();
+	virtual ~LogSystem();
 
-    /**
-     * Log debug message
-     */
-    void Debug(const char *message,
-               const char *filename,
-               int line,
-               const char *function);
+	/**
+	 * Log debug message
+	 */
+	void Debug(const char *message,
+			   const char *filename,
+			   int line,
+			   const char *function);
 
-    /**
-     * Log info message
-     */
-    void Info(const char *message,
-              const char *filename,
-              int line,
-              const char *function);
+	/**
+	 * Log info message
+	 */
+	void Info(const char *message,
+			  const char *filename,
+			  int line,
+			  const char *function);
 
-    /**
-     * Log warning message
-     */
-    void Warning(const char *message,
-                 const char *filename,
-                 int line,
-                 const char *function);
+	/**
+	 * Log warning message
+	 */
+	void Warning(const char *message,
+				 const char *filename,
+				 int line,
+				 const char *function);
 
-    /**
-     * Log error message
-     */
-    void Error(const char *message,
-               const char *filename,
-               int line,
-               const char *function);
+	/**
+	 * Log error message
+	 */
+	void Error(const char *message,
+			   const char *filename,
+			   int line,
+			   const char *function);
 
-    /**
-     * Log pedantic message
-     */
-    void Pedantic(const char *message,
-                  const char *filename,
-                  int line,
-                  const char *function);
+	/**
+	 * Log pedantic message
+	 */
+	void Pedantic(const char *message,
+				  const char *filename,
+				  int line,
+				  const char *function);
 
-    /**
-     * Log pedantic message with secure macro
-     */
-    void SecureDebug(const char *message,
-               const char *filename,
-               int line,
-               const char *function);
+	/**
+	 * Log pedantic message with secure macro
+	 */
+	void SecureDebug(const char *message,
+					 const char *filename,
+					 int line,
+					 const char *function);
 
-    /**
-     * Log info message with secure macro
-     */
-    void SecureInfo(const char *message,
-              const char *filename,
-              int line,
-              const char *function);
+	/**
+	 * Log info message with secure macro
+	 */
+	void SecureInfo(const char *message,
+					const char *filename,
+					int line,
+					const char *function);
 
-    /**
-     * Log warning message with secure macro
-     */
-    void SecureWarning(const char *message,
-                 const char *filename,
-                 int line,
-                 const char *function);
+	/**
+	 * Log warning message with secure macro
+	 */
+	void SecureWarning(const char *message,
+					   const char *filename,
+					   int line,
+					   const char *function);
 
-    /**
-     * Log error message with secure macro
-     */
-    void SecureError(const char *message,
-               const char *filename,
-               int line,
-               const char *function);
+	/**
+	 * Log error message with secure macro
+	 */
+	void SecureError(const char *message,
+					 const char *filename,
+					 int line,
+					 const char *function);
 
-    /**
-     * Set default's DLOG provider Tag
-     */
-    void SetTag(const char *tag);
+	/**
+	 * Set default's DLOG provider Tag
+	 */
+	void SetTag(const char *tag);
 
-    /**
-     * Add abstract provider to providers list
-     *
-     * @notice Ownership is transfered to LogSystem and deleted upon exit
-     */
-    void AddProvider(AbstractLogProvider *provider);
+	/**
+	 * Add abstract provider to providers list
+	 *
+	 * @notice Ownership is transfered to LogSystem and deleted upon exit
+	 */
+	void AddProvider(AbstractLogProvider *provider);
 
-    /**
-     * Remove abstract provider from providers list
-     */
-    void RemoveProvider(AbstractLogProvider *provider);
+	/**
+	 * Remove abstract provider from providers list
+	 */
+	void RemoveProvider(AbstractLogProvider *provider);
 };
 
 /*
@@ -144,13 +144,13 @@ public:
  */
 class COMMON_API NullStream {
 public:
-    NullStream() {}
+	NullStream() {}
 
-    template <typename T>
-    NullStream& operator<<(const T&)
-    {
-        return *this;
-    }
+	template <typename T>
+	NullStream &operator<<(const T &)
+	{
+		return *this;
+	}
 };
 
 /**
@@ -166,45 +166,43 @@ typedef Singleton<LogSystem> LogSystemSingleton;
 //
 
 /* avoid warnings about unused variables */
-#define DPL_MACRO_DUMMY_LOGGING(message, function)                         \
-    do {                                                                   \
-        AuthPasswd::Log::NullStream ns;                                \
-        ns << message;                                                     \
-    } while (0)
+#define DPL_MACRO_DUMMY_LOGGING(message, function) \
+	do {                                           \
+		AuthPasswd::Log::NullStream ns;            \
+		ns << message;                             \
+	} while (0)
 
-#define DPL_MACRO_FOR_LOGGING(message, function)                           \
-do                                                                         \
-{                                                                          \
-    if (AuthPasswd::Log::LogSystemSingleton::Instance().IsLoggingEnabled())   \
-    {                                                                      \
-        std::ostringstream platformLog;                                    \
-        platformLog << message;                                            \
-        AuthPasswd::Log::LogSystemSingleton::Instance().function(      \
-            platformLog.str().c_str(),                                     \
-            __FILE__, __LINE__, __FUNCTION__);                             \
-    }                                                                      \
-} while (0)
+#define DPL_MACRO_FOR_LOGGING(message, function)                                  \
+	do {                                                                          \
+		if (AuthPasswd::Log::LogSystemSingleton::Instance().IsLoggingEnabled()) { \
+			std::ostringstream platformLog;                                       \
+			platformLog << message;                                               \
+			AuthPasswd::Log::LogSystemSingleton::Instance().function(             \
+					platformLog.str().c_str(),                                    \
+					__FILE__, __LINE__, __FUNCTION__);                            \
+		}                                                                         \
+	} while (0)
 
 /* Errors must be always logged. */
 #define  LogError(message) DPL_MACRO_FOR_LOGGING(message, Error)
 #define  LogSecureError(message) DPL_MACRO_FOR_LOGGING(message, SecureError)
 
 #ifdef BUILD_TYPE_DEBUG
-    #define LogDebug(message) DPL_MACRO_FOR_LOGGING(message, Debug)
-    #define LogInfo(message) DPL_MACRO_FOR_LOGGING(message, Info)
-    #define LogWarning(message) DPL_MACRO_FOR_LOGGING(message, Warning)
-    #define LogPedantic(message) DPL_MACRO_FOR_LOGGING(message, Pedantic)
-    #define LogSecureDebug(message) DPL_MACRO_FOR_LOGGING(message, SecureDebug)
-    #define LogSecureInfo(message) DPL_MACRO_FOR_LOGGING(message, SecureInfo)
-    #define LogSecureWarning(message) DPL_MACRO_FOR_LOGGING(message, SecureWarning)
+#define LogDebug(message) DPL_MACRO_FOR_LOGGING(message, Debug)
+#define LogInfo(message) DPL_MACRO_FOR_LOGGING(message, Info)
+#define LogWarning(message) DPL_MACRO_FOR_LOGGING(message, Warning)
+#define LogPedantic(message) DPL_MACRO_FOR_LOGGING(message, Pedantic)
+#define LogSecureDebug(message) DPL_MACRO_FOR_LOGGING(message, SecureDebug)
+#define LogSecureInfo(message) DPL_MACRO_FOR_LOGGING(message, SecureInfo)
+#define LogSecureWarning(message) DPL_MACRO_FOR_LOGGING(message, SecureWarning)
 #else
-    #define LogDebug(message) DPL_MACRO_DUMMY_LOGGING(message, Debug)
-    #define LogInfo(message) DPL_MACRO_DUMMY_LOGGING(message, Info)
-    #define LogWarning(message) DPL_MACRO_DUMMY_LOGGING(message, Warning)
-    #define LogPedantic(message) DPL_MACRO_DUMMY_LOGGING(message, Pedantic)
-    #define LogSecureDebug(message) DPL_MACRO_DUMMY_LOGGING(message, SecureDebug)
-    #define LogSecureInfo(message) DPL_MACRO_DUMMY_LOGGING(message, SecureInfo)
-    #define LogSecureWarning(message) DPL_MACRO_DUMMY_LOGGING(message, SecureWarning)
+#define LogDebug(message) DPL_MACRO_DUMMY_LOGGING(message, Debug)
+#define LogInfo(message) DPL_MACRO_DUMMY_LOGGING(message, Info)
+#define LogWarning(message) DPL_MACRO_DUMMY_LOGGING(message, Warning)
+#define LogPedantic(message) DPL_MACRO_DUMMY_LOGGING(message, Pedantic)
+#define LogSecureDebug(message) DPL_MACRO_DUMMY_LOGGING(message, SecureDebug)
+#define LogSecureInfo(message) DPL_MACRO_DUMMY_LOGGING(message, SecureInfo)
+#define LogSecureWarning(message) DPL_MACRO_DUMMY_LOGGING(message, SecureWarning)
 #endif // BUILD_TYPE_DEBUG
 
 #endif // AUTHPASSWD_LOG_H

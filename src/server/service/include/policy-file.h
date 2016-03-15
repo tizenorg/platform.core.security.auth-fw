@@ -29,58 +29,56 @@
 
 #include <policy.h>
 
-namespace AuthPasswd
-{
-    class PolicyFile
-    {
-    public:
-        PolicyFile(unsigned int user);
+namespace AuthPasswd {
+class PolicyFile {
+public:
+	PolicyFile(unsigned int user);
 
-        void enable();
-        void disable();
+	void enable();
+	void disable();
 
-        bool isPolicyActive() const;
+	bool isPolicyActive() const;
 
-        void writeMemoryToFile() const;
+	void writeMemoryToFile() const;
 
-        bool checkMinLength(const std::string &password) const;
-        void setMinLength(unsigned int minLength);
+	bool checkMinLength(const std::string &password) const;
+	void setMinLength(unsigned int minLength);
 
-        bool checkMinComplexCharNumber(const std::string &password) const;
-        void setMinComplexCharNumber(unsigned int minComplexCharNumber);
+	bool checkMinComplexCharNumber(const std::string &password) const;
+	void setMinComplexCharNumber(unsigned int minComplexCharNumber);
 
-        bool checkMaxCharOccurrences(const std::string &password) const;
-        void setMaxCharOccurrences(unsigned int maxCharOccurrences);
+	bool checkMaxCharOccurrences(const std::string &password) const;
+	void setMaxCharOccurrences(unsigned int maxCharOccurrences);
 
-        bool checkMaxNumSeqLength(const std::string &password) const;
-        void setMaxNumSeqLength(unsigned int maxNumSeqLength);
+	bool checkMaxNumSeqLength(const std::string &password) const;
+	void setMaxNumSeqLength(unsigned int maxNumSeqLength);
 
-        bool checkQualityType(const std::string &password) const;
-        void setQualityType(unsigned int qualityType);
+	bool checkQualityType(const std::string &password) const;
+	void setQualityType(unsigned int qualityType);
 
-        bool isValidPattern(const std::string &pattern) const;
-        bool checkPattern(const std::string &password) const;
-        void setPattern(const std::string &pattern);
+	bool isValidPattern(const std::string &pattern) const;
+	bool checkPattern(const std::string &password) const;
+	void setPattern(const std::string &pattern);
 
-        bool checkForbiddenPasswds(const std::string &password) const;
-        void setForbiddenPasswds(std::set<std::string> forbiddenPasswds);
+	bool checkForbiddenPasswds(const std::string &password) const;
+	void setForbiddenPasswds(std::set<std::string> forbiddenPasswds);
 
-    private:
-        void loadMemoryFromFile();
-        void preparePolicyFile();
-        void resetState();
-        bool fileExists(const std::string &filename) const;
-        bool dirExists(const std::string &dirpath) const;
-        std::string createDir(const std::string &dir, unsigned int user) const;
+private:
+	void loadMemoryFromFile();
+	void preparePolicyFile();
+	void resetState();
+	bool fileExists(const std::string &filename) const;
+	bool dirExists(const std::string &dirpath) const;
+	std::string createDir(const std::string &dir, unsigned int user) const;
 
-        //user name
-        unsigned int m_user;
+	//user name
+	unsigned int m_user;
 
-        bool m_enable;
+	bool m_enable;
 
-        //policy file data
-        Policy m_policy;
-    };
+	//policy file data
+	Policy m_policy;
+};
 }    //namespace AuthPasswd
 
 #endif

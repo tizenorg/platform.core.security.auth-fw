@@ -29,59 +29,58 @@
 namespace AuthPasswd {
 namespace Log {
 class DLOGLogProvider :
-    public AbstractLogProvider
-{
-  private:
-    std::unique_ptr<char[]> m_tag;
+	public AbstractLogProvider {
+private:
+	std::unique_ptr<char[]> m_tag;
 
-    static std::string FormatMessage(const char *message,
-                                     const char *filename,
-                                     int line,
-                                     const char *function);
+	static std::string FormatMessage(const char *message,
+									 const char *filename,
+									 int line,
+									 const char *function);
 
-  public:
-    DLOGLogProvider();
-    virtual ~DLOGLogProvider();
+public:
+	DLOGLogProvider();
+	virtual ~DLOGLogProvider();
 
-    virtual void Debug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void Info(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function);
-    virtual void Warning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function);
-    virtual void Error(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void Pedantic(const char *message,
-                          const char *fileName,
-                          int line,
-                          const char *function);
-    virtual void SecureDebug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void SecureInfo(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function);
-    virtual void SecureWarning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function);
-    virtual void SecureError(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
+	virtual void Debug(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function);
+	virtual void Info(const char *message,
+					  const char *fileName,
+					  int line,
+					  const char *function);
+	virtual void Warning(const char *message,
+						 const char *fileName,
+						 int line,
+						 const char *function);
+	virtual void Error(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function);
+	virtual void Pedantic(const char *message,
+						  const char *fileName,
+						  int line,
+						  const char *function);
+	virtual void SecureDebug(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function);
+	virtual void SecureInfo(const char *message,
+							const char *fileName,
+							int line,
+							const char *function);
+	virtual void SecureWarning(const char *message,
+							   const char *fileName,
+							   int line,
+							   const char *function);
+	virtual void SecureError(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function);
 
-    // Set global Tag according to DLOG
-    void SetTag(const char *tag);
+	// Set global Tag according to DLOG
+	void SetTag(const char *tag);
 };
 
 } // namespace Log

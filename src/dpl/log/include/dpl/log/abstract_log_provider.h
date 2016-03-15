@@ -24,52 +24,51 @@
 
 namespace AuthPasswd {
 namespace Log {
-class AbstractLogProvider
-{
-  public:
-    virtual ~AbstractLogProvider() {}
+class AbstractLogProvider {
+public:
+	virtual ~AbstractLogProvider() {}
 
-    virtual void SetTag(const char *tag);
+	virtual void SetTag(const char *tag);
 
-    virtual void Debug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function) = 0;
-    virtual void Info(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function) = 0;
-    virtual void Warning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function) = 0;
-    virtual void Error(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function) = 0;
-    virtual void Pedantic(const char *message,
-                          const char *fileName,
-                          int line,
-                          const char *function) = 0;
-    virtual void SecureDebug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function) = 0;
-    virtual void SecureInfo(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function) = 0;
-    virtual void SecureWarning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function) = 0;
-    virtual void SecureError(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function) = 0;
+	virtual void Debug(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function) = 0;
+	virtual void Info(const char *message,
+					  const char *fileName,
+					  int line,
+					  const char *function) = 0;
+	virtual void Warning(const char *message,
+						 const char *fileName,
+						 int line,
+						 const char *function) = 0;
+	virtual void Error(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function) = 0;
+	virtual void Pedantic(const char *message,
+						  const char *fileName,
+						  int line,
+						  const char *function) = 0;
+	virtual void SecureDebug(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function) = 0;
+	virtual void SecureInfo(const char *message,
+							const char *fileName,
+							int line,
+							const char *function) = 0;
+	virtual void SecureWarning(const char *message,
+							   const char *fileName,
+							   int line,
+							   const char *function) = 0;
+	virtual void SecureError(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function) = 0;
 
-  protected:
-    static const char *LocateSourceFileName(const char *filename);
+protected:
+	static const char *LocateSourceFileName(const char *filename);
 };
 }
 } // namespace AuthPasswd

@@ -28,71 +28,70 @@
 namespace AuthPasswd {
 namespace Log {
 class OldStyleLogProvider :
-    public AbstractLogProvider
-{
-  private:
-    bool m_showDebug;
-    bool m_showInfo;
-    bool m_showWarning;
-    bool m_showError;
-    bool m_showPedantic;
-    bool m_printStdErr;
+	public AbstractLogProvider {
+private:
+	bool m_showDebug;
+	bool m_showInfo;
+	bool m_showWarning;
+	bool m_showError;
+	bool m_showPedantic;
+	bool m_printStdErr;
 
-    static std::string FormatMessage(const char *message,
-                                     const char *filename,
-                                     int line,
-                                     const char *function);
+	static std::string FormatMessage(const char *message,
+									 const char *filename,
+									 int line,
+									 const char *function);
 
-  public:
-    OldStyleLogProvider(bool showDebug,
-                        bool showInfo,
-                        bool showWarning,
-                        bool showError,
-                        bool showPedantic);
-    OldStyleLogProvider(bool showDebug,
-                        bool showInfo,
-                        bool showWarning,
-                        bool showError,
-                        bool showPedantic,
-                        bool printStdErr);
-    virtual ~OldStyleLogProvider() {}
+public:
+	OldStyleLogProvider(bool showDebug,
+						bool showInfo,
+						bool showWarning,
+						bool showError,
+						bool showPedantic);
+	OldStyleLogProvider(bool showDebug,
+						bool showInfo,
+						bool showWarning,
+						bool showError,
+						bool showPedantic,
+						bool printStdErr);
+	virtual ~OldStyleLogProvider() {}
 
-    virtual void Debug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void Info(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function);
-    virtual void Warning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function);
-    virtual void Error(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void Pedantic(const char *message,
-                          const char *fileName,
-                          int line,
-                          const char *function);
-    virtual void SecureDebug(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
-    virtual void SecureInfo(const char *message,
-                      const char *fileName,
-                      int line,
-                      const char *function);
-    virtual void SecureWarning(const char *message,
-                         const char *fileName,
-                         int line,
-                         const char *function);
-    virtual void SecureError(const char *message,
-                       const char *fileName,
-                       int line,
-                       const char *function);
+	virtual void Debug(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function);
+	virtual void Info(const char *message,
+					  const char *fileName,
+					  int line,
+					  const char *function);
+	virtual void Warning(const char *message,
+						 const char *fileName,
+						 int line,
+						 const char *function);
+	virtual void Error(const char *message,
+					   const char *fileName,
+					   int line,
+					   const char *function);
+	virtual void Pedantic(const char *message,
+						  const char *fileName,
+						  int line,
+						  const char *function);
+	virtual void SecureDebug(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function);
+	virtual void SecureInfo(const char *message,
+							const char *fileName,
+							int line,
+							const char *function);
+	virtual void SecureWarning(const char *message,
+							   const char *fileName,
+							   int line,
+							   const char *function);
+	virtual void SecureError(const char *message,
+							 const char *fileName,
+							 int line,
+							 const char *function);
 };
 }
 } // namespace AuthPasswd

@@ -36,7 +36,7 @@
 #define AUTH_PASSWD_API __attribute__((visibility("default")))
 
 extern "C" {
-    struct msghdr;
+	struct msghdr;
 }
 
 namespace AuthPasswd {
@@ -45,7 +45,7 @@ typedef std::vector<unsigned char> RawBuffer;
 
 int sendToServerWithFd(int fd, const RawBuffer &send, MessageBuffer &recv);
 
-int sendToServer(char const * const interface, const RawBuffer &send, MessageBuffer &recv);
+int sendToServer(char const *const interface, const RawBuffer &send, MessageBuffer &recv);
 
 /*
  * sendToServerAncData is special case when we want to receive file descriptor
@@ -55,34 +55,32 @@ int sendToServer(char const * const interface, const RawBuffer &send, MessageBuf
  * This function should be called _ONLY_ in this particular case.
  *
  */
-int sendToServerAncData(char const * const interface, const RawBuffer &send, struct msghdr &hdr);
+int sendToServerAncData(char const *const interface, const RawBuffer &send, struct msghdr &hdr);
 
 /*
  * Decorator function that performs frequently repeated exception handling in
  * SS client API functions. Accepts lambda expression as an argument.
  */
-int try_catch(const std::function<int()>& func);
+int try_catch(const std::function<int()> &func);
 
 
 class SockRAII {
 public:
-    SockRAII()
-      : m_sock(-1)
-    {}
+	SockRAII() : m_sock(-1) {}
 
-    ~SockRAII() {
-        if (m_sock > -1 )
-            close(m_sock);
-    }
+	~SockRAII() {
+		if (m_sock > -1)
+			close(m_sock);
+	}
 
-    int Connect(char const * const interface);
+	int Connect(char const *const interface);
 
-    int Get() const {
-        return m_sock;
-    }
+	int Get() const {
+		return m_sock;
+	}
 
 private:
-    int m_sock;
+	int m_sock;
 };
 } // namespace AuthPasswd
 

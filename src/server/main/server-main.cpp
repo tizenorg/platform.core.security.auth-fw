@@ -35,54 +35,55 @@
 IMPLEMENT_SAFE_SINGLETON(AuthPasswd::Log::LogSystem);
 
 #define REGISTER_SOCKET_SERVICE(manager, service) \
-    registerSocketService<service>(manager, #service)
+	registerSocketService<service>(manager, #service)
 
 template<typename T>
-void registerSocketService(AuthPasswd::SocketManager &manager, const std::string& serviceName)
+void registerSocketService(AuthPasswd::SocketManager &manager, const std::string &serviceName)
 {
-    T *service = NULL;
-    try {
-        service = new T();
-        service->Start();
-        manager.RegisterSocketService(service);
-        service = NULL;
-    } catch (const AuthPasswd::Exception &exception) {
-        LogError("Error in creating service " << serviceName <<
-                 ", details:\n" << exception.DumpToString());
-    } catch (const std::exception& e) {
-        LogError("Error in creating service " << serviceName <<
-                 ", details:\n" << e.what());
-    } catch (...) {
-        LogError("Error in creating service " << serviceName <<
-                 ", unknown exception occured");
-    }
-    if (service)
-        delete service;
+	T *service = NULL;
+
+	try {
+		service = new T();
+		service->Start();
+		manager.RegisterSocketService(service);
+		service = NULL;
+	} catch (const AuthPasswd::Exception &exception) {
+		LogError("Error in creating service " << serviceName <<
+				 ", details:\n" << exception.DumpToString());
+	} catch (const std::exception &e) {
+		LogError("Error in creating service " << serviceName <<
+				 ", details:\n" << e.what());
+	} catch (...) {
+		LogError("Error in creating service " << serviceName <<
+				 ", unknown exception occured");
+	}
+
+	if (service)
+		delete service;
 }
 
-int main(void) {
+int main(void)
+{
+	UNHANDLED_EXCEPTION_HANDLER_BEGIN {
+		AuthPasswd::Singleton<AuthPasswd::Log::LogSystem>::Instance().SetTag("AUTH_PASSWD");
 
-    UNHANDLED_EXCEPTION_HANDLER_BEGIN
-    {
-        AuthPasswd::Singleton<AuthPasswd::Log::LogSystem>::Instance().SetTag("AUTH_PASSWD");
+		sigset_t mask;
+		sigemptyset(&mask);
+		sigaddset(&mask, SIGTERM);
+		sigaddset(&mask, SIGPIPE);
 
-        sigset_t mask;
-        sigemptyset(&mask);
-        sigaddset(&mask, SIGTERM);
-        sigaddset(&mask, SIGPIPE);
-        if (-1 == pthread_sigmask(SIG_BLOCK, &mask, NULL)) {
-            LogError("Error in pthread_sigmask");
-            return 1;
-        }
+		if (-1 == pthread_sigmask(SIG_BLOCK, &mask, NULL)) {
+			LogError("Error in pthread_sigmask");
+			return 1;
+		}
 
-        LogInfo("Start!");
-        AuthPasswd::SocketManager manager;
+		LogInfo("Start!");
+		AuthPasswd::SocketManager manager;
 
-        REGISTER_SOCKET_SERVICE(manager, AuthPasswd::PasswordService);
+		REGISTER_SOCKET_SERVICE(manager, AuthPasswd::PasswordService);
 
-        manager.MainLoop();
-    }
-    UNHANDLED_EXCEPTION_HANDLER_END
-    return 0;
+		manager.MainLoop();
+	}
+	UNHANDLED_EXCEPTION_HANDLER_END
+	return 0;
 }
-

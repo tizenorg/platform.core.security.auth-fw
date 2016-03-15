@@ -29,15 +29,15 @@ namespace AuthPasswd {
 // Do not call directly
 // Always use Assert macro
 AUTHPASSWD_NORETURN void AssertProc(const char *condition,
-                             const char *file,
-                             int line,
-                             const char *function);
+									const char *file,
+									int line,
+									const char *function);
 } // namespace AuthPasswd
 
 #define Assert(Condition) do { if (!(Condition)) { AuthPasswd::AssertProc(#Condition, \
-                                                                   __FILE__, \
-                                                                   __LINE__, \
-                                                                   __FUNCTION__); \
-                               } } while (0)
+				__FILE__, \
+				__LINE__, \
+				__FUNCTION__); \
+	} } while (0)
 
 #endif // AUTH_PASSWD_ASSERT_H

@@ -31,8 +31,7 @@
 
 namespace AuthPasswd {
 namespace Log {
-namespace // anonymous
-{
+namespace { // anonymous
 using namespace AuthPasswd::Colors::Text;
 const char *DEBUG_BEGIN = GREEN_BEGIN;
 const char *DEBUG_END = GREEN_END;
@@ -47,254 +46,258 @@ const char *PEDANTIC_END = PURPLE_END;
 
 std::string GetFormattedTime()
 {
-    timeval tv;
-    tm localNowTime;
-
-    gettimeofday(&tv, NULL);
-    localtime_r(&tv.tv_sec, &localNowTime);
-
-    char format[64];
-    snprintf(format,
-             sizeof(format),
-             "%02i:%02i:%02i.%03i",
-             localNowTime.tm_hour,
-             localNowTime.tm_min,
-             localNowTime.tm_sec,
-             static_cast<int>(tv.tv_usec / 1000));
-    return format;
+	timeval tv;
+	tm localNowTime;
+	gettimeofday(&tv, NULL);
+	localtime_r(&tv.tv_sec, &localNowTime);
+	char format[64];
+	snprintf(format,
+			 sizeof(format),
+			 "%02i:%02i:%02i.%03i",
+			 localNowTime.tm_hour,
+			 localNowTime.tm_min,
+			 localNowTime.tm_sec,
+			 static_cast<int>(tv.tv_usec / 1000));
+	return format;
 }
 } // namespace anonymous
 
 std::string OldStyleLogProvider::FormatMessage(const char *message,
-                                               const char *filename,
-                                               int line,
-                                               const char *function)
+		const char *filename,
+		int line,
+		const char *function)
 {
-    std::ostringstream val;
-
-    val << std::string("[") << GetFormattedTime() << std::string("] [") <<
-    static_cast<unsigned long>(pthread_self()) << "/" <<
-    static_cast<int>(getpid()) << std::string("] [") <<
-    LocateSourceFileName(filename) << std::string(":") << line <<
-    std::string("] ") << function << std::string("(): ") << message;
-
-    return val.str();
+	std::ostringstream val;
+	val << std::string("[") << GetFormattedTime() << std::string("] [") <<
+		static_cast<unsigned long>(pthread_self()) << "/" <<
+		static_cast<int>(getpid()) << std::string("] [") <<
+		LocateSourceFileName(filename) << std::string(":") << line <<
+		std::string("] ") << function << std::string("(): ") << message;
+	return val.str();
 }
 
 OldStyleLogProvider::OldStyleLogProvider(bool showDebug,
-                                         bool showInfo,
-                                         bool showWarning,
-                                         bool showError,
-                                         bool showPedantic) :
-    m_showDebug(showDebug),
-    m_showInfo(showInfo),
-    m_showWarning(showWarning),
-    m_showError(showError),
-    m_showPedantic(showPedantic),
-    m_printStdErr(false)
+		bool showInfo,
+		bool showWarning,
+		bool showError,
+		bool showPedantic) :
+	m_showDebug(showDebug),
+	m_showInfo(showInfo),
+	m_showWarning(showWarning),
+	m_showError(showError),
+	m_showPedantic(showPedantic),
+	m_printStdErr(false)
 {}
 
 OldStyleLogProvider::OldStyleLogProvider(bool showDebug,
-                                         bool showInfo,
-                                         bool showWarning,
-                                         bool showError,
-                                         bool showPedantic,
-                                         bool printStdErr) :
-    m_showDebug(showDebug),
-    m_showInfo(showInfo),
-    m_showWarning(showWarning),
-    m_showError(showError),
-    m_showPedantic(showPedantic),
-    m_printStdErr(printStdErr)
+		bool showInfo,
+		bool showWarning,
+		bool showError,
+		bool showPedantic,
+		bool printStdErr) :
+	m_showDebug(showDebug),
+	m_showInfo(showInfo),
+	m_showWarning(showWarning),
+	m_showError(showError),
+	m_showPedantic(showPedantic),
+	m_printStdErr(printStdErr)
 {}
 
 void OldStyleLogProvider::Debug(const char *message,
-                                const char *filename,
-                                int line,
-                                const char *function)
+								const char *filename,
+								int line,
+								const char *function)
 {
-    if (m_showDebug) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", DEBUG_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), DEBUG_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", DEBUG_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), DEBUG_END);
-        }
-    }
+	if (m_showDebug) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", DEBUG_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), DEBUG_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", DEBUG_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), DEBUG_END);
+		}
+	}
 }
 
 void OldStyleLogProvider::Info(const char *message,
-                               const char *filename,
-                               int line,
-                               const char *function)
+							   const char *filename,
+							   int line,
+							   const char *function)
 {
-    if (m_showInfo) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", INFO_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), INFO_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", INFO_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), INFO_END);
-        }
-    }
+	if (m_showInfo) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", INFO_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), INFO_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", INFO_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), INFO_END);
+		}
+	}
 }
 
 void OldStyleLogProvider::Warning(const char *message,
-                                  const char *filename,
-                                  int line,
-                                  const char *function)
+								  const char *filename,
+								  int line,
+								  const char *function)
 {
-    if (m_showWarning) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", WARNING_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), WARNING_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", WARNING_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), WARNING_END);
-        }
-    }
+	if (m_showWarning) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", WARNING_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), WARNING_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", WARNING_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), WARNING_END);
+		}
+	}
 }
 
 void OldStyleLogProvider::Error(const char *message,
-                                const char *filename,
-                                int line,
-                                const char *function)
+								const char *filename,
+								int line,
+								const char *function)
 {
-    if (m_showError) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", ERROR_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), ERROR_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", ERROR_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), ERROR_END);
-        }
-    }
+	if (m_showError) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", ERROR_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), ERROR_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", ERROR_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), ERROR_END);
+		}
+	}
 }
 
 void OldStyleLogProvider::Pedantic(const char *message,
-                                   const char *filename,
-                                   int line,
-                                   const char *function)
+								   const char *filename,
+								   int line,
+								   const char *function)
 {
-    if (m_showPedantic) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", PEDANTIC_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), PEDANTIC_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", PEDANTIC_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), PEDANTIC_END);
-        }
-    }
+	if (m_showPedantic) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", PEDANTIC_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), PEDANTIC_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", PEDANTIC_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), PEDANTIC_END);
+		}
+	}
 }
 
 void OldStyleLogProvider::SecureDebug(const char *message,
-                                const char *filename,
-                                int line,
-                                const char *function)
+									  const char *filename,
+									  int line,
+									  const char *function)
 {
 #ifdef _SECURE_LOG
-    if (m_showDebug) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", DEBUG_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), DEBUG_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", DEBUG_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), DEBUG_END);
-        }
-    }
+
+	if (m_showDebug) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", DEBUG_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), DEBUG_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", DEBUG_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), DEBUG_END);
+		}
+	}
+
 #else
-    (void)message;
-    (void)filename;
-    (void)line;
-    (void)function;
+	(void)message;
+	(void)filename;
+	(void)line;
+	(void)function;
 #endif
 }
 
 void OldStyleLogProvider::SecureInfo(const char *message,
-                               const char *filename,
-                               int line,
-                               const char *function)
+									 const char *filename,
+									 int line,
+									 const char *function)
 {
 #ifdef _SECURE_LOG
-    if (m_showInfo) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", INFO_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), INFO_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", INFO_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), INFO_END);
-        }
-    }
+
+	if (m_showInfo) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", INFO_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), INFO_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", INFO_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), INFO_END);
+		}
+	}
+
 #else
-    (void)message;
-    (void)filename;
-    (void)line;
-    (void)function;
+	(void)message;
+	(void)filename;
+	(void)line;
+	(void)function;
 #endif
 }
 
 void OldStyleLogProvider::SecureWarning(const char *message,
-                                  const char *filename,
-                                  int line,
-                                  const char *function)
+										const char *filename,
+										int line,
+										const char *function)
 {
 #ifdef _SECURE_LOG
-    if (m_showWarning) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", WARNING_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), WARNING_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", WARNING_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), WARNING_END);
-        }
-    }
+
+	if (m_showWarning) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", WARNING_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), WARNING_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", WARNING_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), WARNING_END);
+		}
+	}
+
 #else
-    (void)message;
-    (void)filename;
-    (void)line;
-    (void)function;
+	(void)message;
+	(void)filename;
+	(void)line;
+	(void)function;
 #endif
 }
 
 void OldStyleLogProvider::SecureError(const char *message,
-                                const char *filename,
-                                int line,
-                                const char *function)
+									  const char *filename,
+									  int line,
+									  const char *function)
 {
 #ifdef _SECURE_LOG
-    if (m_showError) {
-        if (m_printStdErr) {
-            fprintf(stderr, "%s%s%s\n", ERROR_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), ERROR_END);
-        } else {
-            fprintf(stdout, "%s%s%s\n", ERROR_BEGIN,
-                    FormatMessage(message, filename, line,
-                        function).c_str(), ERROR_END);
-        }
-    }
+
+	if (m_showError) {
+		if (m_printStdErr) {
+			fprintf(stderr, "%s%s%s\n", ERROR_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), ERROR_END);
+		} else {
+			fprintf(stdout, "%s%s%s\n", ERROR_BEGIN,
+					FormatMessage(message, filename, line,
+								  function).c_str(), ERROR_END);
+		}
+	}
+
 #else
-    (void)message;
-    (void)filename;
-    (void)line;
-    (void)function;
+	(void)message;
+	(void)filename;
+	(void)line;
+	(void)function;
 #endif
 }
 

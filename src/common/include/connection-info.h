@@ -32,8 +32,8 @@
 namespace AuthPasswd {
 
 struct ConnectionInfo {
-    InterfaceID interfaceID;
-    MessageBuffer buffer;
+	InterfaceID interfaceID;
+	MessageBuffer buffer;
 };
 
 typedef std::map<int, ConnectionInfo> ConnectionInfoMap;
