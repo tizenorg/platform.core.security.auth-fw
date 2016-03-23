@@ -49,7 +49,7 @@
 
 namespace {
 
-const time_t SOCKET_TIMEOUT = 300;
+const time_t SOCKET_TIMEOUT = 30;
 
 } // namespace anonymous
 
@@ -393,8 +393,10 @@ void SocketManager::MainLoop()
 
 		if (m_timeoutQueue.empty()) {
 			LogDebug("No usaable timeout found.");
-			ptrTimeout = NULL; // select will wait without timeout
+	  		ptrTimeout->tv_sec = SOCKET_TIMEOUT;
+			ptrTimeout->tv_usec = 0;
 		} else {
+
 			time_t currentTime = time(NULL);
 			auto &pqTimeout = m_timeoutQueue.top();
 			// 0 means that select won't block and socket will be closed ;-)
@@ -408,31 +410,34 @@ void SocketManager::MainLoop()
 		int ret = select(m_maxDesc + 1, &readSet, &writeSet, NULL, ptrTimeout);
 
 		if (0 == ret) { // timeout
-			Assert(!m_timeoutQueue.empty());
-			Timeout pqTimeout = m_timeoutQueue.top();
-			m_timeoutQueue.pop();
-			auto &desc = m_socketDescriptionVector[pqTimeout.sock];
 
-			if (!desc.isTimeout || !desc.isOpen) {
-				// Connection was closed. Timeout is useless...
+			if (!m_timeoutQueue.empty()) {
+				Timeout pqTimeout = m_timeoutQueue.top();
+				m_timeoutQueue.pop();
+				auto &desc = m_socketDescriptionVector[pqTimeout.sock];
+
+				if (!desc.isTimeout || !desc.isOpen) {
+					// Connection was closed. Timeout is useless...
+					desc.isTimeout = false;
+					continue;
+				}
+
+				if (pqTimeout.time < desc.timeout) {
+					// Is it possible?
+					// This socket was used after timeout. We need to update timeout.
+					pqTimeout.time = desc.timeout;
+					m_timeoutQueue.push(pqTimeout);
+					continue;
+				}
+
+				// timeout from m_timeoutQueue matches with socket.timeout
+				// and connection is open. Time to close it!
+				// Putting new timeout in queue here is pointless.
 				desc.isTimeout = false;
-				continue;
+				CloseSocket(pqTimeout.sock);
 			}
-
-			if (pqTimeout.time < desc.timeout) {
-				// Is it possible?
-				// This socket was used after timeout. We need to update timeout.
-				pqTimeout.time = desc.timeout;
-				m_timeoutQueue.push(pqTimeout);
-				continue;
-			}
-
-			// timeout from m_timeoutQueue matches with socket.timeout
-			// and connection is open. Time to close it!
-			// Putting new timeout in queue here is pointless.
-			desc.isTimeout = false;
-			CloseSocket(pqTimeout.sock);
 			// All done. Now we should process next select ;-)
+			m_working = false;
 			continue;
 		}
 
