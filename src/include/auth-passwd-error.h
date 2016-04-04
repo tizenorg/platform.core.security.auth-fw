@@ -48,37 +48,37 @@
 /*! \brief   indicating the access has been denied by Authetnication Server */
 #define AUTH_PASSWD_API_ERROR_ACCESS_DENIED -6
 
-/*! \brief   indicating there is no user  */
+/*! \brief   indicating there is no user */
 #define AUTH_PASSWD_API_ERROR_NO_USER -8
 
-/*! \brief   indicating there is no password set  */
+/*! \brief   indicating there is no password set */
 #define AUTH_PASSWD_API_ERROR_NO_PASSWORD -9
 
-/*! \brief   indicating there is no recovery password set  */
+/*! \brief   indicating there is no recovery password set */
 #define AUTH_PASSWD_API_ERROR_NO_RECOVERY_PASSWORD -10
 
-/*! \brief   indicating password exists in system  */
+/*! \brief   indicating password exists in system */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_EXIST -11
 
-/*! \brief   indicating password mismatch  */
+/*! \brief   indicating password mismatch */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_MISMATCH -12
 
-/*! \brief   indicating password is invalid  */
+/*! \brief   indicating password dose not meet password policies */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_INVALID -13
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
+/*! \brief   indicating password retry timeout is not occurred yet */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_RETRY_TIMER -14
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
+/*! \brief   indicating no other attempts are possible */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_MAX_ATTEMPTS_EXCEEDED -15
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
+/*! \brief   indicating password is expired */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_EXPIRED -16
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
+/*! \brief   indicating password is reused */
 #define AUTH_PASSWD_API_ERROR_PASSWORD_REUSED -17
 
-/*! \brief   indicating password retry timeout is not occurred yet  */
+/*! \brief   indicating password recovery is restricted because max attempts policy is set */
 #define AUTH_PASSWD_API_ERROR_RECOVERY_PASSWORD_RESTRICTED -18
 
 /*! \brief   indicating the error with unknown reason */
