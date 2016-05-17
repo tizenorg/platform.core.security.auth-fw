@@ -6,7 +6,7 @@ Type=notify
 ExecStart=@BIN_DIR@/@SERVICE_NAME@
 Sockets=@SOCK_PASSWD_CHECK@
 Sockets=@SOCK_PASSWD_SET@
-Sockets=@SOCK_PASSWD_RESETK@
+Sockets=@SOCK_PASSWD_RESET@
 Sockets=@SOCK_PASSWD_POLICY@
 
 [Install]
