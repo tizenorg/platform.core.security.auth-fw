@@ -1,5 +1,7 @@
 [Socket]
 ListenStream=@RUN_DIR@/.@SOCK_PASSWD_RESET@
+SocketUser=security_fw
+SocketGroup=security_fw
 SocketMode=0777
 SmackLabelIPIn=*
 SmackLabelIPOut=@
