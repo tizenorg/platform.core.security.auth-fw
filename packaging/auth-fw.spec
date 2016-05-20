@@ -19,6 +19,8 @@ BuildRequires: pkgconfig(libtzplatform-config)
 %description
 Authentication framework which is consist of client library and server daemon
 
+%global user_name security_fw
+%global group_name security_fw
 %global run_dir %{?TZ_SYS_RUN:%TZ_SYS_RUN}%{!?TZ_SYS_RUN:/var/run}
 %global bin_dir %{?TZ_SYS_BIN:%TZ_SYS_BIN}%{!?TZ_SYS_BIN:%_bindir}
 # image creation error occured if /usr/sbin used for ldconfig
@@ -93,6 +95,8 @@ make %{?jobs:-j%jobs}
 %install_service sockets.target.wants %{sock_passwd_reset}
 %install_service sockets.target.wants %{sock_passwd_policy}
 
+mkdir -p %{buildroot}/%{rw_data_dir}
+
 %post
 %{sbin_dir}/ldconfig
 systemctl daemon-reload
@@ -105,6 +109,7 @@ if [ $1 = 2 ]; then
     # update
     systemctl restart %{name}.service
 fi
+chsmack -a System %{rw_data_dir}
 
 %preun
 if [ $1 = 0 ]; then
@@ -143,6 +148,7 @@ fi
 %{_unitdir}/sockets.target.wants/%{sock_passwd_set}
 %{_unitdir}/sockets.target.wants/%{sock_passwd_reset}
 %{_unitdir}/sockets.target.wants/%{sock_passwd_policy}
+%dir %attr(770, %{user_name}, %{group_name}) %{rw_data_dir}
 
 %files -n lib%{name}-client
 %manifest lib%{name}-client.manifest
