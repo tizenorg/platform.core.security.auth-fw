@@ -61,6 +61,13 @@ Requires:   lib%{name}-client-admin = %{version}-%{release}
 %description -n lib%{name}-client-devel
 Authentication framework package (client-devel)
 
+%package -n %{name}-cmd
+Summary:    Authentication framework utils
+Group:      Security/Utilities
+
+%description -n %{name}-cmd
+Authentication framework utils
+
 %prep
 %setup -q
 cp -a %{SOURCE1001} %{SOURCE1002} %{SOURCE1003} .
@@ -76,6 +83,7 @@ export LDFLAGS+="-Wl,--rpath=%{_libdir}"
         -DCMAKE_VERBOSE_MAKEFILE=ON \
         -DSERVICE_NAME=%{name} \
         -DBIN_DIR:PATH=%{bin_dir} \
+        -DSBIN_DIR:PATH=%{sbin_dir} \
         -DRUN_DIR:PATH=%{run_dir} \
         -DRW_DATA_DIR:PATH=%{rw_data_dir} \
         -DSYSTEMD_UNIT_DIR:PATH=%{_unitdir} \
@@ -169,3 +177,7 @@ fi
 %{_includedir}/%{name}/auth-passwd-error.h
 %{_includedir}/%{name}/auth-passwd-policy-types.h
 %{_libdir}/pkgconfig/*.pc
+
+%files -n %{name}-cmd
+%manifest %{name}.manifest
+%attr(755,root,root) %{sbin_dir}/%{name}-cmd
