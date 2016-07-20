@@ -6,6 +6,7 @@ Type=notify
 ExecStart=@BIN_DIR@/@SERVICE_NAME@
 User=security_fw
 Group=security_fw
+SmackProcessLabel=System
 Sockets=@SOCK_PASSWD_CHECK@
 Sockets=@SOCK_PASSWD_SET@
 Sockets=@SOCK_PASSWD_RESET@
